@@ -1,0 +1,16 @@
+<table class="table table-sm small border">
+    <thead>
+        <th>Fixture</th>
+        <th>Competition</th>
+        <th>Kick Off</th>
+        <th class="text-center">Result</th>
+    </thead>
+    {% for fixture in fixtures %}
+    <tr>
+        <td><a href="">{{ fixture.fixture }}</a></td>
+        <td>{{ fixture.competition.name }}</td>
+        <td>{{ fixture.kick_off }}</td>
+        <td class="text-center">{{ fixture.final_score }}</td>
+    </tr>
+    {% endfor %}
+</table>

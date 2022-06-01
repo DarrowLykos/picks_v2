@@ -1,0 +1,12 @@
+<table class="table table-sm small border">
+    <thead>
+        <th>Leaderboard</th>
+    </thead>
+    <tbody>
+        {% for lb in leaderboards %}
+        <tr>
+            <td><a href="{% url 'game:leaderboard_detail' lb.id %}">{{ lb }}</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

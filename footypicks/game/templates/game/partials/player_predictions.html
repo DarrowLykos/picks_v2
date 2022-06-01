@@ -1,0 +1,24 @@
+<table class="table table-sm small border">
+    <thead>
+    <th>Fixture</th>
+    <th>Prediction</th>
+    <th>Joker</th>
+    <th>Points</th>
+    </thead>
+    <tbody>
+    {% for pick in player_picks %}
+    <tr>
+        <td>{{ pick.fixture.fixture }}</td>
+        <td>{{ pick.pick_as_string }}</td>
+        <td>{% if pick.joker %}
+            <i class="fa-solid fa-xmark"></i><i class="fa-solid fa-2"></i>
+            {% endif %}
+        </td>
+        <td>{{ pick.points }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+
+    </tr>
+    </tbody>
+</table>

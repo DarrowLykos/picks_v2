@@ -1,0 +1,15 @@
+{% load my_filters %}
+<table class="table table-sm small border">
+    <thead>
+        <th>Method</th>
+        <th>Points</th>
+    </thead>
+    {% for key, item in score %}
+    {% if item %}
+    <tr>
+        <td>{{ key|verbose_name|title }}</td>
+        <td>{{ item }}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>

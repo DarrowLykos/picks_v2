@@ -1,0 +1,76 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}Game Detail{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row border align-right">
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Back to League</a>
+        </div>
+        {% if can_predict %}
+        <div class="col-auto">
+            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-primary">Predict</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Edit Picks</a>
+        </div>
+        {% endif %}
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Rules</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Prize Pool</a>
+        </div>
+    </div>
+    <div class="row border">
+        <div class="col">
+            <h1>{{ game.mini_league.name }}</h1>
+        </div>
+        <div class="col-auto">
+            <h3>{{ game.get_status_display }}</h3>
+            <h2>{{ game }}</h2>
+        </div>
+    </div>
+    <div class="row border">
+        <div class="col-auto">
+            <h5>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
+        </div>
+        <div class="col-auto">
+            <h5>{{ game.get_status_display }} (Last update: {{ game.last_update }})</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 col-sm border">
+            <h5>Fixtures</h5>
+            {% include 'game/partials/fixtures_table.html' with fixtures=game.fixtures.all %}
+        </div>
+        <div class="col-4 col-sm border">
+            {% if player_picks %}
+            <h5>{{ player }}'s Picks</h5>
+            {% include 'game/partials/player_predictions.html' with player_picks=player_picks %}
+            {% else %}
+            No Picks submitted
+            {% endif %}
+        </div>
+        <div class="col-3 col-sm border">
+            <h5>Leaderboard</h5>
+            {% include 'game/partials/leaderboard.html' with leaderboard=leaderboard %}
+        </div>
+    </div>
+    <div class="row border">
+
+        <div class="col-4 col-sm border">
+            PICKS MATRIX GOES HERE
+        </div>
+        <div class="col-4 col-sm border">
+            CHANCE OF WINNING CALCULATION GOES HERE
+        </div>
+        <div class="col-4 col-sm border">
+            EXTEND LEADERBOARD HERE
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}

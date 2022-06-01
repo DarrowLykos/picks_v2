@@ -1,0 +1,128 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}Predictions{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row border align-right">
+        <div class="col-auto">
+            <a href="{% url 'game:game_detail' pk=game.pk %}" class="btn btn-primary">Back to Game</a>
+        </div>
+    </div>
+    <div class="row border">
+        <div class="col">
+            <h1>{{ game.mini_league.name }}</h1>
+        </div>
+        <div class="col-auto">
+            <h3>{{ game.get_status_display }}</h3>
+            <h2>{{ game }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-sm-12 border">
+            <form method="post" id="picks_form">
+                {% csrf_token %}
+                <h5>Picks</h5>
+                <table class="table table-sm small border">
+                    <thead>
+                        <th class="text-center" colspan="3">Fixture / Prediction</th>
+                        <th class="text-center">Kick Off</th>
+                    </thead>
+                    <tbody>
+                        {% for pick in existing_picks %}
+                        <tr>
+                            <td class="text-center" colspan="3">{{ pick.fixture }} | {{ pick.fixture.competition.short_name }}</td>
+                            <td class="text-center">{{ pick.fixture.kick_off }}</td>
+                        </tr>
+                        <tr>
+                            {% if pick.locked or pick.fixture.status != "Upcoming" %}
+                            <td class="text-center" colspan="3">{{ pick.pick_as_string }}</td>
+                            {% else %}
+                            <td class="text-center">
+                                <input class="text-center" type="text" value="{{ pick.home_score }}" id="exist_home_{{ pick.id }}" name="exist_home_{{ pick.id }}">
+                            </td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">
+                                <input class="text-center" type="text" value="{{ pick.away_score }}" id="exist_away_{{ pick.id }}" name="exist_away_{{ pick.id }}">
+                            </td>
+                            {% endif %}
+                            <td class="text-center">
+                                {% if not pick.valid %}
+                                <i class="fa-solid fa-ban"></i>
+                                {% elif pick.locked or pick.fixture.status != "Upcoming" %}
+                                <i class="fa-solid fa-lock"></i>
+                                {% else %}
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if new_fixtures %}
+                        {% for fix in new_fixtures %}
+                        <tr>
+                            <td class="text-center" colspan="3">
+                                {{ fix.fixture }} | {{ fix.competition.short_name }}
+                            </td>
+                            <td class="text-center">{{ fix.kick_off }}</td>
+                        </tr><tr>
+                            {% if fix.status == "Upcoming" %}
+                            <td class="text-center"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
+                            <td class="text-center">-</td>
+                            <td class="text-center"><input class="text-center" type="text" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}"></td>
+                            <td class="text-center"><i class="fa-solid fa-pen-to-square"></i></td>
+                            {% elif fix.status != "Upcoming" %}
+                            <td class="text-center" colspan="3"><span class="text-bold">Missed Kick Off</span></td>
+                            <td class="text-center"><i class="fa-solid fa-lock"></i></td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+                    </tbody>
+                </table>
+                <label for="joker_select">Joker Fixture</label>
+                <select class="form-control" id="joker_select" name="joker_select">
+                    <option disabled>Select Joker Fixture...</option>
+                    {% if joker.locked %}
+                    <option selected id="joker_{{ joker.fixture.id }}">{{ joker.fixture.fixture }}</option>
+                    {% else %}
+                    {% for fix in all_fixtures %}
+                    <option name="joker_{{ fix.id }}" id="joker_{{ fix.id }}"
+                    {% if fix == joker %}
+                    selected>
+                    {% elif fix.status != "Upcoming" %}
+                    disabled> (Kicked off)
+                    {% else %}
+                    >
+                    {% endif %}
+                    {{ fix.fixture }}</option>
+                    {% endfor %}
+                    {% endif %}
+                </select>
+                {% if game.status == "E" %}
+                <p>Game has ended</p>
+                {% elif game.status == "D" %}
+                <p>Game has been deleted</p>
+                {% elif game.status == "L" %}
+                <p>Game has started. Some fixtures may not be available to predict</p>
+                <button class="btn btn-primary m-1" name="submit" type="submit">Submit</button>
+                {% else %}
+                <button class="btn btn-primary m-1" name="submit" type="submit">Submit</button>
+                {% endif %}
+            </form>
+        </div>
+        <div class="col-lg-6 col-sm-12 border">
+            <div class="row">
+                <div class="col-6">
+                    <h5>Scoring</h5>
+                    {% include 'game/partials/score_structure.html' with score=score %}
+                </div>
+                <div class="col-6">
+                    <h5>Other Stuff</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

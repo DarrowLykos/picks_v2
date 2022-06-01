@@ -1,0 +1,52 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}Mini League{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row border align-right">
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Back to Leagues</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Join</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Edit</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Invite</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Leave</a>
+        </div>
+
+    </div>
+    <div class="row border">
+        <div class="col">
+            <h1>{{ league.name }}</h1>
+        </div>
+        <div class="col-auto">
+            <h2>{{ league.get_status_display }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2 col-sm border">
+            <h5>League Members</h5>
+            {% include 'game/partials/league_members_list.html' with players=players %}
+        </div>
+        <div class="col-4 col-sm border">
+            <h5>Games</h5>
+            {% include 'game/partials/gameweeks_list.html' with games=league.get_gameweeks.all %}
+        </div>
+        <div class="col-2 col-sm border">
+            <h5>Leaderboards</h5>
+            {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
+        </div>
+        <div class="col-4 col-sm border">
+            <h5>Scoring</h5>
+            {% include 'game/partials/score_structure.html' with score=league.score_structure.get_fields %}
+        </div>
+    </div>
+</div>
+{% endblock %}
