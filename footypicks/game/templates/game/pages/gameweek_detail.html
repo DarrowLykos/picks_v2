@@ -3,7 +3,7 @@
 {% block title %}Game Detail{% endblock %}
 {% block content %}
 
-<div class="container">
+<div class="container-fluid">
     <div class="row border align-right">
         <div class="col-auto">
             <a href="#" class="btn btn-primary">Back to League</a>
@@ -12,16 +12,7 @@
         <div class="col-auto">
             <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-primary">Predict</a>
         </div>
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Edit Picks</a>
-        </div>
         {% endif %}
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Rules</a>
-        </div>
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Prize Pool</a>
-        </div>
     </div>
     <div class="row border">
         <div class="col">
@@ -41,11 +32,33 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-5 col-sm border">
+        <div class="col-lg-2 col-sm-3 border">
+            {% include 'game/partials/side_menu.html' %}
+            <h5>Entry Costs and Prizes</h5>
+            <table class="table table-sm small border">
+                <tr>
+                    <th>Entry</th>
+                    <td>£1,000,000</td>
+                </tr>
+                <tr>
+                    <th>1st Place</th>
+                    <td>£1,000,000</td>
+                </tr>
+                <tr>
+                    <th>2nd Place</th>
+                    <td>£500,000</td>
+                </tr>
+                <tr>
+                    <th>3rd Place</th>
+                    <td>£1</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-lg-4 col-sm-6 border">
             <h5>Fixtures</h5>
             {% include 'game/partials/fixtures_table.html' with fixtures=game.fixtures.all %}
         </div>
-        <div class="col-4 col-sm border">
+        <div class="col-lg-3 col-sm-6 border">
             {% if player_picks %}
             <h5>{{ player }}'s Picks</h5>
             {% include 'game/partials/player_predictions.html' with player_picks=player_picks %}
@@ -53,23 +66,27 @@
             No Picks submitted
             {% endif %}
         </div>
-        <div class="col-3 col-sm border">
+        <div class="col-lg-3 col-sm-9 border">
             <h5>Leaderboard</h5>
             {% include 'game/partials/leaderboard.html' with leaderboard=leaderboard %}
+            TOTAL PRIZE POOL: £1,000,000
         </div>
-    </div>
-    <div class="row border">
+        <!--<div class="col-lg-2 col-sm-3 border">
+            <h5>Scoring</h5>
+            {% include 'game/partials/score_structure.html' with score=score %}
+            <h5>Prize Pool</h5>
+            POOL HERE
+        </div>-->
 
+    </div>
+    <!--<div class="row">
         <div class="col-4 col-sm border">
             PICKS MATRIX GOES HERE
         </div>
         <div class="col-4 col-sm border">
             CHANCE OF WINNING CALCULATION GOES HERE
         </div>
-        <div class="col-4 col-sm border">
-            EXTEND LEADERBOARD HERE
-        </div>
-    </div>
+    </div>-->
 
 
 </div>

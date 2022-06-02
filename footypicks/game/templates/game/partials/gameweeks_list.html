@@ -9,8 +9,8 @@
         {% for game in games %}
         <tr>
             <td><a href="{% url 'game:game_detail' game.id %}">{{ game }}</a></td>
-            <td>{{ game.start_date|date:"jS M Y" }}</td>
-            <td>{{ game.end_date|date:"jS M Y" }}</td>
+            <td>{{ game.start_date|date:"m/d/Y" }}</td>
+            <td>{{ game.end_date|date:"m/d/Y" }}</td>
             <td>{{ game.get_status_display }}</td>
 
         </tr>

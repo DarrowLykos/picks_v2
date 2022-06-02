@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'game.apps.GameConfig',
     'players.apps.PlayersConfig',
     'django_extensions',
+
 ]
 
 MIDDLEWARE = [

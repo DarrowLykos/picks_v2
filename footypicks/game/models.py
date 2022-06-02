@@ -318,6 +318,7 @@ class Gameweek(models.Model):
     def get_predictions_by_player(self, player_id):
         try:
             #self.playergameweek_set.get(player_id=player_id).predictions.update_points(self.mini_league.score_structure)
+            print(self.playergameweek_set.get(player_id=player_id).predictions.all())
             picks = self.playergameweek_set.get(player_id=player_id).predictions.all()
             return picks
             #return self.playergameweek_set.get(player_id=player_id).get_predictions()

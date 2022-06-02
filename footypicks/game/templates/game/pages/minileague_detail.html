@@ -3,7 +3,7 @@
 {% block title %}Mini League{% endblock %}
 {% block content %}
 
-<div class="container">
+<div class="container-fluid">
     <div class="row border align-right">
         <div class="col-auto">
             <a href="#" class="btn btn-primary">Back to Leagues</a>
@@ -31,21 +31,25 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-lg-2 col-sm-3 border">
+            {% include 'game/partials/side_menu.html' %}
+        </div>
         <div class="col-2 col-sm border">
             <h5>League Members</h5>
             {% include 'game/partials/league_members_list.html' with players=players %}
         </div>
-        <div class="col-4 col-sm border">
+        <div class="col-3 col-sm border">
             <h5>Games</h5>
+            <h6>Recent</h6>
+            {% include 'game/partials/gameweeks_list.html' with games=recent_game %}
+            <h6>Upcoming</h6>
+            {% include 'game/partials/gameweeks_list.html' with games=next_game %}
+            <h6>All</h6>
             {% include 'game/partials/gameweeks_list.html' with games=league.get_gameweeks.all %}
         </div>
-        <div class="col-2 col-sm border">
-            <h5>Leaderboards</h5>
-            {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
-        </div>
-        <div class="col-4 col-sm border">
-            <h5>Scoring</h5>
-            {% include 'game/partials/score_structure.html' with score=league.score_structure.get_fields %}
+        <div class="col-lg-5 col-sm border">
+            <h5>Live Game</h5>
+
         </div>
     </div>
 </div>

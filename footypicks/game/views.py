@@ -25,6 +25,8 @@ class MiniLeagueDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['leaderboards'] = self.object.get_aggregated_gameweeks()
         context['players'] = self.object.players.all().order_by('user__username')
+        context['games'] = self.object.get_gameweeks()
+        context['score'] = self.object.score_structure.get_fields()
         return context
 
 class GameweekDetail(DetailView):
@@ -54,6 +56,9 @@ class GameweekDetail(DetailView):
 
         context['player'] = player_selected
         context['player_picks'] = self.object.get_predictions_by_player(player_selected.id)
+        context['score'] = self.object.mini_league.score_structure.get_fields()
+        context['games'] = self.object.mini_league.get_gameweeks()
+        context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
 
         return context
 
@@ -68,6 +73,17 @@ class GameweekLeaderboardDetail(DetailView):
         if not obj.view_only:
             return redirect('game:game_detail', pk=kwargs['pk'])
         return super().get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.object.refresh_game()
+
+        context['score'] = self.object.mini_league.score_structure.get_fields()
+        context['games'] = self.object.mini_league.get_gameweeks()
+        context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
+
+        return context
+
 
 class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
     model = Gameweek
@@ -93,6 +109,7 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
         print(post)
         msgs_success = []
         msgs_warnings = []
+        player_gameweek = PlayerGameweek.objects.get(player=self.request.user.player, gameweek=Gameweek.objects.get(pk=kwargs['pk']))
         joker = request.POST.get('joker_select', "")
         if joker == "Select Joker Fixture...":
             messages.error(self.request, "Please select a Joker Fixture")
@@ -135,19 +152,20 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                         print('saved')
                 else:
                     print('not saved')
-                    msgs_warnings.append(f"{pick.fixture} prediction not updated. Fixture locked")
+                    msgs_warnings.append(f"{pick.fixture.fixture} prediction not updated. Fixture locked")
             elif "new" in x:
                 print(x, y)
                 fixture_id = int(x.split("_")[-1])
                 fixture = Fixture.objects.get(pk=fixture_id)
-                if fixture.status == "Upcoming":
+                print(fixture.status())
+                if fixture.status() == "Upcoming":
                     if "home" in x:
                         new_pick = Prediction(player=request.user.player,
                                               fixture=fixture,
                                               home_score=int(y),
                                               away_score=0,
                                               )
-                        msgs_success = f"{fixture} prediction added"
+                        msgs_success.append(f"{fixture.fixture} prediction added")
                     elif "away" in x:
                         new_pick = Prediction.objects.filter(player=request.user.player,
                                                              fixture=fixture_id,
@@ -157,9 +175,10 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                         new_pick.joker = True
                     new_pick.last_changed = datetime.now()
                     new_pick.save()
+                    player_gameweek.predictions.add(new_pick)
                     print('created')
                 else:
-                    messages.warning(self.request, f"{fixture} is {fixture.status}. Pick not submitted")
+                    messages.warning(self.request, f"{fixture.fixture} is {fixture.status}. Pick not submitted")
         msgs = list(dict.fromkeys(msgs_success))
         for msg in msgs:
             print(msg)
