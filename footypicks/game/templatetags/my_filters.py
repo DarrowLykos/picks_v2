@@ -19,3 +19,8 @@ def percentage(value):
 @register.filter
 def verbose_name(value):
     return value.replace("_", " ")
+
+@register.filter(name='get_class')
+def get_class(value):
+  return value.__class__.__name__
+

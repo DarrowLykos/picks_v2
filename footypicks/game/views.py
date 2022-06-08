@@ -7,6 +7,7 @@ from .forms import DummyPredictionForm
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from players.models import Player
 from .models import *
 
 # Create your views here.
@@ -26,7 +27,12 @@ class MiniLeagueDetail(DetailView):
         context['leaderboards'] = self.object.get_aggregated_gameweeks()
         context['players'] = self.object.players.all().order_by('user__username')
         context['games'] = self.object.get_gameweeks()
+        context['prev_games'] = self.object.get_gameweeks().filter(end_date__lte=datetime.now())[:2]
+        context['next_games'] = self.object.get_gameweeks().filter(start_date__gte=datetime.now())[:2]
         context['score'] = self.object.score_structure.get_fields()
+        current_player = self.request.user.player
+        context['player_is_owner'] = self.object.player_is_owner(current_player.id)
+        context['player_is_member'] = self.object.player_is_owner(current_player.id)
         return context
 
 class GameweekDetail(DetailView):
@@ -36,8 +42,8 @@ class GameweekDetail(DetailView):
 
     def get(self, *args, **kwargs):
         obj = self.model.objects.get(pk=kwargs['pk'])
-        if obj.view_only:
-            return redirect('game:leaderboard_detail', pk=kwargs['pk'])
+        '''if obj.view_only:
+            return redirect('game:leaderboard_detail', pk=kwargs['pk'])'''
         return super().get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -59,20 +65,21 @@ class GameweekDetail(DetailView):
         context['score'] = self.object.mini_league.score_structure.get_fields()
         context['games'] = self.object.mini_league.get_gameweeks()
         context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
+        context['prize_pool'] = self.object.prize_table()
 
         return context
 
 
 class GameweekLeaderboardDetail(DetailView):
-    model = Gameweek
+    model = AggregatedGame
     context_object_name = 'game'
     template_name = 'game/pages/leaderboard_detail.html'
 
-    def get(self, *args, **kwargs):
+    '''def get(self, *args, **kwargs):
         obj = self.model.objects.get(pk=kwargs['pk'])
         if not obj.view_only:
             return redirect('game:game_detail', pk=kwargs['pk'])
-        return super().get(*args, **kwargs)
+        return super().get(*args, **kwargs)'''
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -80,7 +87,11 @@ class GameweekLeaderboardDetail(DetailView):
 
         context['score'] = self.object.mini_league.score_structure.get_fields()
         context['games'] = self.object.mini_league.get_gameweeks()
+        # context['player_games'] = PlayerGameweek.objects.filter(gameweeks__in=self.object.mini_league.get_gameweeks())
+        context['games_for_lb'] = self.object.gameweeks.all()
         context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
+        print(self.object.leaderboard())
+        context['leaderboard'] = self.object.leaderboard()
 
         return context
 
@@ -139,7 +150,8 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                             pick.away_score = int(y)
                             msgs_success.append(f"{pick.fixture} prediction updated")
                             changed = True
-                    if pick.fixture == joker and pick.joker != True:
+                    print(pick.fixture.fixture, joker, pick.joker)
+                    if pick.fixture.fixture == joker and not pick.joker:
                         pick.joker = True
                         msgs_success.append(f"{pick.fixture} prediction updated")
                         changed = True
@@ -209,6 +221,18 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
 
         return context
 
+class PlayerDetail(LoginRequiredMixin, DetailView):
+    model = Player
+    template_name = 'game/pages/player_detail.html'
+    context_object_name = 'player'
 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['cleared_transactions'] = self.object.transaction_balances(pending=False)
+        context['pending_transactions'] = self.object.transaction_balances(pending=True)
+        context['all_transactions'] = self.object.all_transactions()
+        context['leagues'] = self.object.minileague_set.all()
+        return context
 

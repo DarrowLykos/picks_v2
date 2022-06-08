@@ -1,0 +1,110 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}Player Profile{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row border align-right">
+        {% if request.user == player.user %}
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Edit Details</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Change Password</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Make Payment</a>
+        </div>
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Payout</a>
+        </div>
+        {% endif %}
+        {% if request.user.is_authenticated %}
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Logout</a>
+        </div>
+        {% else %}
+        <div class="col-auto">
+            <a href="#" class="btn btn-primary">Signup/Login</a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row border">
+        <div class="col">
+            <h1>{{ player }}'s Profile</h1>
+        </div>
+        {% if request.user == player.user %}
+        <div class="col-auto">
+            <h2>{{ player.real_name }}</h2>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-lg-2 col-sm border">
+            <h5>Personal Details</h5>
+            <table class="table table-sm small border">
+                <tr>
+                    <td colspan="2">pic</td>
+                </tr>
+                <tr>
+                    <th>Player since</th>
+                    <td>{{ player.user.date_joined|date:"d/m/Y" }}</td>
+                </tr>
+                <tr>
+                    <th>Prizes</th>
+                    <td>£{{ player.prize_transactions.1 }}</td>
+                </tr>
+                <tr>
+                    <th>Games won</th>
+                    <td>TBC</td>
+                </tr>
+                <tr>
+                    <th>League won</th>
+                    <td>TBC</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-lg-3 col-sm border">
+            <h5>Current Balances</h5>
+            {% include 'game/partials/player_balance.html' %}
+        </div>
+        <div class="col-lg-3 col-sm border">
+            <h5>Leagues</h5>
+            {% include 'game/partials/leagues_list.html' %}
+        </div>
+        <div class="col-lg-4 col-sm border">
+            <h5>Trophy Cabinet</h5>
+            trophy 1<br>
+            trophy 2<br>
+        </div>
+        <div class="col-lg-2 col-sm border">
+            <h5>History</h5>
+            2010:<br>
+            2011:<br>
+            2012:<br>
+            2013:<br>
+        </div>
+        <div class="col-lg-6 col-sm border">
+            <h5>Transaction History</h5>
+            <table class="table table-sm small border">
+                <thead>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Pending</th>
+                    <th>Cleared</th>
+                </thead>
+                {% for tran in all_transactions.5 %}
+                <tr>
+                    <td>{{ tran.get_type_display }}</td>
+                    <td>{{ tran.date|date:"d/m/Y" }}</td>
+                    <td>&pound;{{ tran.amount|floatformat:2  }}</td>
+                    <td>{{ tran.pending }}</td>
+                    <td>{{ tran.confirmed_date|date:"d/m/Y" }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

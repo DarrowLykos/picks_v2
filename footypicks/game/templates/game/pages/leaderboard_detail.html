@@ -6,22 +6,18 @@
 <div class="container-fluid">
     <div class="row border align-right">
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Back to League</a>
+            <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="btn btn-primary">Back to League</a>
         </div>
         {% if can_predict %}
         <div class="col-auto">
             <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-primary">Predict</a>
         </div>
+        {% endif %}
+        {% if player_is_owner %}
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Edit Picks</a>
+            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-primary">Edit Leaderboard</a>
         </div>
         {% endif %}
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Rules</a>
-        </div>
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Prize Pool</a>
-        </div>
     </div>
     <div class="row border">
         <div class="col">
@@ -29,7 +25,7 @@
         </div>
         <div class="col-auto">
             <h3>{{ game.get_status_display }}</h3>
-            <h2>{{ game }}</h2>
+            <h2>{{ game.name }}</h2>
         </div>
     </div>
     <div class="row border">
@@ -41,12 +37,25 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-2 col-sm-3 border">
-            {% include 'game/partials/side_menu.html' %}
+        <div class="col-lg-2 col-sm">
+            <div class="row">
+                <div class="col border">
+                    {% include 'game/partials/side_menu.html' %}
+                    {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
+                </div>
+            </div>
         </div>
-        <div class="col-lg-10 col-sm border">
-            <h5>Leaderboard</h5>
-            {% include 'game/partials/expanded_leaderboard.html' with leaderboard=leaderboard %}
+        <div class="col-lg-10 col-sm">
+            <div class="row">
+                <div class="col-lg-10 col-sm border">
+                    <h5>Leaderboard</h5>
+                    {% include 'game/partials/expanded_leaderboard.html' with leaderboard=leaderboard %}
+                </div>
+                <div class="col-lg-2 border">
+                    <h5>Games</h5>
+                    {% include 'game/partials/leaderboard_list.html' with leaderboards=games_for_lb %}
+                </div>
+            </div>
         </div>
     </div>
 </div>

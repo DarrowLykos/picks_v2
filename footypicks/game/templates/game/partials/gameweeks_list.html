@@ -1,16 +1,18 @@
 <table class="table table-sm small border">
     <thead>
-        <th>Game</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Status</th>
+        <th style="width:40%;">Game</th>
+        <th style="width:20%;">Start Date</th>
+        <th style="width:20%;">End Date</th>
+        <th style="width:20%;">Status</th>
     </thead>
     <tbody>
         {% for game in games %}
         <tr>
-            <td><a href="{% url 'game:game_detail' game.id %}">{{ game }}</a></td>
-            <td>{{ game.start_date|date:"m/d/Y" }}</td>
-            <td>{{ game.end_date|date:"m/d/Y" }}</td>
+            <td>
+                <a href="{% url 'game:game_detail' game.id %}">{{ game }}</a>
+            </td>
+            <td>{{ game.start_date|date:"d/m/Y" }}</td>
+            <td>{{ game.end_date|date:"d/m/Y" }}</td>
             <td>{{ game.get_status_display }}</td>
 
         </tr>

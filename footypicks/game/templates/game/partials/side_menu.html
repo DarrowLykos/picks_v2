@@ -12,6 +12,6 @@
 <div class="row">
     <div class="col">
     <h5>Games</h5>
-    {% include 'game/partials/gameweeks_list.html' with games=games %}
+    {% include 'game/partials/leaderboard_list.html' with leaderboards=games|slice:":5" %}
     </div>
 </div>

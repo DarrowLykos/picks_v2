@@ -23,18 +23,18 @@
             <form method="post" id="picks_form">
                 {% csrf_token %}
                 <h5>Picks</h5>
-                <table class="table table-sm small border">
+                <table class="table table-sm small border-0">
                     <thead>
                         <th class="text-center" colspan="3">Fixture / Prediction</th>
-                        <th class="text-center">Kick Off</th>
+                        <th class="text-center">Kick Off / Locked</th>
                     </thead>
                     <tbody>
                         {% for pick in existing_picks %}
-                        <tr>
-                            <td class="text-center" colspan="3">{{ pick.fixture }} | {{ pick.fixture.competition.short_name }}</td>
+                        <tr class="border-top-0 border-bottom">
+                            <td class="text-center" colspan="3">{{ pick.fixture.fixture }} | {{ pick.fixture.competition.short_name }}</td>
                             <td class="text-center">{{ pick.fixture.kick_off }}</td>
                         </tr>
-                        <tr>
+                        <tr class="border-top border-bottom-0">
                             {% if pick.locked or pick.fixture.status != "Upcoming" %}
                             <td class="text-center" colspan="3">{{ pick.pick_as_string }}</td>
                             {% else %}
@@ -52,19 +52,20 @@
                                 {% elif pick.locked or pick.fixture.status != "Upcoming" %}
                                 <i class="fa-solid fa-lock"></i>
                                 {% else %}
-                                <i class="fa-solid fa-pen-to-square"></i>
+                                <i class="fa-solid fa-lock-open"></i>
                                 {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                         {% if new_fixtures %}
                         {% for fix in new_fixtures %}
-                        <tr>
+                        <tr class="border-top-0 border-bottom">
                             <td class="text-center" colspan="3">
                                 {{ fix.fixture }} | {{ fix.competition.short_name }}
                             </td>
                             <td class="text-center">{{ fix.kick_off }}</td>
-                        </tr><tr>
+                        </tr>
+                        <tr class="border-top border-bottom-0">
                             {% if fix.status == "Upcoming" %}
                             <td class="text-center"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
                             <td class="text-center">-</td>
@@ -83,10 +84,10 @@
                 </table>
                 <label for="joker_select">Joker Fixture</label>
                 <select class="form-control" id="joker_select" name="joker_select">
-                    <option disabled>Select Joker Fixture...</option>
                     {% if joker.locked %}
                     <option selected id="joker_{{ joker.fixture.id }}">{{ joker.fixture.fixture }}</option>
                     {% else %}
+                    <option disabled>Select Joker Fixture...</option>
                     {% for fix in all_fixtures %}
                     <option name="joker_{{ fix.id }}" id="joker_{{ fix.id }}"
                     {% if fix == joker %}

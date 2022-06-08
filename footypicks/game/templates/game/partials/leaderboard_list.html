@@ -1,11 +1,20 @@
+{% load my_filters %}
 <table class="table table-sm small border">
     <thead>
-        <th>Leaderboard</th>
     </thead>
     <tbody>
         {% for lb in leaderboards %}
         <tr>
-            <td><a href="{% url 'game:leaderboard_detail' lb.id %}">{{ lb }}</a></td>
+            <th style="width:70%;">
+                {% if lb|get_class == 'Gameweek' %}
+                <!-- <abbr title="Submitted"><i class="fa-solid fa-circle-check"></i></abbr>
+                <abbr title="DNP"><i class="fa-solid fa-triangle-exclamation"></i></abbr> -->
+                <a href="{% url 'game:game_detail' lb.id %}">{{ lb.name }}</a>
+                {% else %}
+                <a href="{% url 'game:leaderboard_detail' lb.id %}">{{ lb.name }}</a>
+                {% endif %}
+            </th>
+            <td>{{ lb.get_status_display }}</td>
         </tr>
         {% endfor %}
     </tbody>

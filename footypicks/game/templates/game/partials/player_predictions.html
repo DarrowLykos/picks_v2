@@ -8,7 +8,7 @@
     <tbody>
     {% for pick in player_picks %}
     <tr>
-        <td>{{ pick.fixture.fixture }}</td>
+        <th>{{ pick.fixture.fixture }}</th>
         <td>{{ pick.pick_as_string }}</td>
         <td>{% if pick.joker %}
             <i class="fa-solid fa-xmark"></i><i class="fa-solid fa-2"></i>

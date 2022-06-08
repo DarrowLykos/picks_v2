@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='index'),
+    path('profile/<int:pk>/', views.PlayerDetail.as_view(), name='player_detail'),
     path('minileague/<int:pk>/', views.MiniLeagueDetail.as_view(), name='minileague_detail'),
     path('game/<int:pk>/', views.GameweekDetail.as_view(), name='game_detail'),
     path('game/<int:pk>/predict/', views.EditPredictions.as_view(), name='game_predict'),

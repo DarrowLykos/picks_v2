@@ -1,0 +1,20 @@
+{% load humanize %}
+{% load my_filters %}
+<h5>Prizes</h5>
+<table class="table table-sm small border">
+  {% for k, v in prize_table.items %}
+  <tr>
+    <th style="width:70%;">{{ k|ordinal }} Place</th>
+    <td>&pound;{{ v|floatformat:2 }}*</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td style="font-size:0.75em;" colspan="2">
+      {% if game.status == "E" %}
+      *Final Totals
+      {% else %}
+      *Running Totals
+      {% endif %}
+    </td>
+  </tr>
+</table>

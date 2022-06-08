@@ -1,0 +1,14 @@
+{% load my_filters %}
+<table class="table table-sm small border">
+    <thead>
+    </thead>
+    <tbody>
+        {% for league in leagues %}
+        <tr>
+            <th>
+                <a href="{% url 'game:minileague_detail' league.id %}">{{ league.name }}</a>
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

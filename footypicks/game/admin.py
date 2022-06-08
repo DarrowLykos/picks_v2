@@ -11,3 +11,5 @@ admin.site.register(Gameweek)
 admin.site.register(PlayerGameweek)
 admin.site.register(Prediction)
 admin.site.register(Score)
+admin.site.register(AggregatedGame)
+

@@ -1,7 +1,7 @@
 # All the functions and processes in dealing with the SportDB website go here
 import requests
-from .models import Fixture, Competition, Team
 from datetime import datetime
+
 URL_PREFIX = "https://www.thesportsdb.com/api/v1/json/2/"
 
 '''for round in rounds:
@@ -9,27 +9,38 @@ URL_PREFIX = "https://www.thesportsdb.com/api/v1/json/2/"
 ...     for event in requests.get(url).json()['events']:
 ...             print(event)'''
 
+CUP_ROUNDS = {
+    'Quarter-Final': 125,
+    'Semi-Final': 150,
+    'Playoff': 160,
+    'Playoff Semi-Final': 170,
+    'Playoff Final': 180,
+    'Final': 200,
+}
+
 
 class GetRoundEvents:
 
     def __init__(self, comp, round):
         self.comp = comp
-        self.round = round
+        self.round = str(round)
         self.url = f"{URL_PREFIX}eventsround.php?id={comp.sportsdb_id}&r={self.round}&s={comp.season}"
         print(self.url)
         self.data = requests.get(self.url).json()['events']
 
     def update_team(self, team_data):
+        from .models import Team
         team, created = Team.objects.get_or_create(sportsdb_id=team_data[0])
         if created:
             team.long_name = team_data[1]
-            team.short_name = team_data[1]
-            team.initial_name = team_data[1][:2]
+            team.short_name = team_data[1][:12]
+            team.initial_name = team_data[1][:3].upper()
         team.competitions.add(self.comp)
         team.save()
         return Team.objects.get(pk=team.id)
 
     def update_fixtures(self):
+        from .models import Fixture
         for event in self.data:
             home_data = [str(event['idHomeTeam']), event['strHomeTeam']]
             away_data = [str(event['idAwayTeam']), event['strAwayTeam']]
@@ -43,15 +54,15 @@ class GetRoundEvents:
                 fixture.home_team = home_team
                 fixture.away_team = away_team
                 fixture.competition = self.comp
-                fixture.ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
-                fixture.ko_time = datetime.strptime(event['strTime'], "%H:%M:%S")
             if event_status == "Match Finished":
                 fixture.home_score = int(event['intHomeScore'])
                 fixture.away_score = int(event['intAwayScore'])
             if not event['strPostponed'] == "no":
                fixture.postponed = True
+            fixture.ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
+            fixture.ko_time = datetime.strptime(event['strTime'], "%H:%M:%S")
             fixture.save()
-            print(fixture, "Created:", created)
+            print(fixture.short_desc(), "Created:", created)
 
 
 class GetFixture:

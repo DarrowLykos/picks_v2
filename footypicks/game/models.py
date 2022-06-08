@@ -6,6 +6,8 @@ from datetime import datetime, timedelta, timezone
 from django.core.validators import RegexValidator
 from django.db.models import Count, Sum, Avg, Max, Min
 import pytz
+from django.db.models import F
+from .sportsDB import GetRoundEvents
 
 GAME_STATUS = (
         ("L", "Live"),
@@ -13,6 +15,36 @@ GAME_STATUS = (
         ("D", "Deleted"),
         ("U", "Upcoming"),
     )
+
+PRIZE_SPLIT_LIST = (
+    ("1", "100% to 1st place"),
+    ("2", "60/40 to 1st and 2nd"),
+    ("3", "50/30/20 to 1st, 2nd and 3rd"),
+    ("4", "40/30/20/10 to 1st, 2nd, 3rd and 4th"),
+)
+
+
+def prize_split_table(prize_split):
+    prize_split = int(prize_split)
+    if prize_split == 1:
+        return {1: 1}
+    elif prize_split == 2:
+        return {1: 0.6,
+                2: 0.4,
+                }
+    elif prize_split == 3:
+        return {1: 0.5,
+                2: 0.3,
+                3: 0.2,
+                }
+    elif prize_split == 4:
+        return {1: 0.4,
+                2: 0.3,
+                3: 0.2,
+                4: 0.1,
+                }
+    else:
+        return None
 
 class Score(models.Model):
     name = models.CharField(max_length=100)
@@ -96,8 +128,9 @@ class Competition(models.Model):
     def __str__(self):
         return f"{self.name} | {self.season}"
 
-    def get_fixtures(self):
-        pass
+    def get_fixtures_by_round(self, round_number):
+        fixtures = GetRoundEvents(self, round_number)
+        fixtures.update_fixtures()
 
 
 class Team(models.Model):
@@ -161,6 +194,7 @@ class Fixture(models.Model):
     class Meta:
         ordering = ('ko_date', 'ko_time')
 
+    @property
     def fixture(self):
         return f"{self.home_team} vs {self.away_team}"
 
@@ -171,6 +205,7 @@ class Fixture(models.Model):
     def short_desc(self):
         # ABC vs XYZ | CMP
         return f"{self.home_team.initial_name} vs {self.away_team.initial_name} | {self.competition.short_name}"
+
 
     @property
     def final_score(self):
@@ -235,6 +270,8 @@ class MiniLeague(models.Model):
     new_players_allowed = models.BooleanField(default=True)
     last_update = models.DateTimeField(auto_now=True)
     score_structure = models.ForeignKey(Score, on_delete=models.SET_NULL, null=True)
+    gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
+
 
     def __str__(self):
         return self.name
@@ -242,18 +279,20 @@ class MiniLeague(models.Model):
     class Meta:
         verbose_name = "Mini League"
 
+    def player_is_member(self, player_id):
+        if self.players.filter(pk=player_id).count() == 1:
+            return True
 
-    def leader(self):
-        pass
-
-    def leaderboard(self, limit=None):
-        pass
+    def player_is_owner(self, player_id):
+        if self.owner.id == player_id:
+            return True
 
     def get_gameweeks(self):
+        # TODO: Add PlayerGameweek relationship to results so the tick/cross is displayed on Game lists
         return self.gameweek_set.filter(view_only=False)
 
     def get_aggregated_gameweeks(self):
-        return self.gameweek_set.filter(view_only=True)
+        return self.leaderboards.all()
 
 
 class Gameweek(models.Model):
@@ -268,8 +307,14 @@ class Gameweek(models.Model):
     mini_league = models.ForeignKey(MiniLeague, null=True, on_delete=models.SET_NULL)
     fixtures = models.ManyToManyField(Fixture, blank=True, )
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
-    fee = models.DecimalField(max_digits=10, decimal_places=2)
-    view_only = models.BooleanField(default=False) # turns the Gameweek into a leaderboard
+    # fee = models.DecimalField(max_digits=10, decimal_places=2)  # Moved to MiniLeague
+    # A percentage of the leftover prize pool. Used for Leaderboards,
+    # aka view-only Games as they usually cover multiple Games
+    # prize_pool_percent = models.DecimalField(max_digits=10, decimal_places=3)
+    # A fixed amount taken from the Mini-league field called gameweek_fee to accumulate the prize pool for a Game.
+    split_of_gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    view_only = models.BooleanField(default=False)  # turns the Gameweek into a leaderboard
+    prize_split = models.CharField(max_length=1, choices=PRIZE_SPLIT_LIST, default="1")
     last_refresh = models.DateTimeField()
 
     def __str__(self):
@@ -281,10 +326,16 @@ class Gameweek(models.Model):
     def check_status(self):
         pass
 
+    def award_prizes(self):
+        # get list of players who have won, solve prize_list and then update paid field on Player/Gameweek and
+        # Player/AggregatedGame, then create transaction. double check game has ended first.
+        pass
+
     def leader(self):
         return self.leaderboard()[0]
 
     def leaderboard(self, limit=None):
+
         #self.update_points()
         lb = self.playergameweek_set.all()
         return lb.order_by('-points')
@@ -294,14 +345,13 @@ class Gameweek(models.Model):
         if self.status in ["L", "U"] or override:
             current_datetime = datetime.now(pytz.utc)
             print(self.last_update + timedelta(minutes=15))
-            if self.last_update + timedelta(minutes=15) < current_datetime:
+            if (self.last_update + timedelta(minutes=15) < current_datetime) or override:
                 self.update_points()
                 self.last_update = current_datetime
                 if finalise:
                     self.status = "E"
                 self.save()
                 print('saved gw')
-
 
     def update_points(self):
         #self.playergameweek_set.update_points(self.mini_league.score_structure)
@@ -331,10 +381,101 @@ class Gameweek(models.Model):
         else:
             return False
 
-'''class Leaderboard(models.Model):
+    def prize_table(self):
+        prize_pool = self.prize_pool()
+        tbl = prize_split_table(self.prize_split)
+        for k, v in tbl.items():
+            tbl[k] = v * prize_pool
+
+        lb = self.leaderboard()
+        for plr in lb:
+            # Check total points vs next player. If more than, then the player has current forloop count and return
+            # prize split. If players have equal points then adjust prize split values to share between them.
+            pass
+
+        return tbl
+
+    def prize_pool(self):
+        total_plays = PlayerGameweek.objects.annotate(count=Count('predictions')).filter(gameweek=self, count__gt=0).count()
+        return total_plays * self.split_of_gameweek_fee
+
+
+class AggregatedGame(models.Model):
     name = models.CharField(max_length=25)
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
-    fee = models.DecimalField(max_digits=10, decimal_places=2)'''
+    gameweeks = models.ManyToManyField(Gameweek, related_name="leaderboards")
+    mini_league = models.ForeignKey(MiniLeague, on_delete=models.SET_NULL, null=True, related_name="leaderboards")
+    primary_ag = models.BooleanField(default=False) #  determines if this is the primary AG for the mini-league
+    status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
+    last_update = models.DateTimeField(auto_now=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    created_by = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL)
+    # A fixed amount taken from the Mini-league field called gameweek_fee to accumulate the prize pool for a Game.
+    # Fee is per Gameweek, so Leaderboards with multiple gameweeks will have multiple fees
+    split_of_gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    prize_split = models.CharField(max_length=1, choices=PRIZE_SPLIT_LIST, default="1")
+
+    def __str__(self):
+        return f"{self.mini_league} | {self.name}"
+
+    class Meta:
+        verbose_name = "Leaderboard"
+        verbose_name_plural = "Leaderboards"
+
+    def update_points(self):
+        for gw in self.gameweeks.all():
+            for pg in gw.playergameweek_set.all():
+                try:
+                    pg.update_points()
+                except:
+                    pass
+        return True
+
+    def award_prizes(self):
+        # get list of players who have won, solve prize_list and then update paid field on Player/Gameweek and
+        # Player/AggregatedGame, then create transaction. double check game has ended first.
+        pass
+
+    def refresh_game(self, finalise=False, override=False):
+        print('refresh')
+        if self.status in ["L", "U"] or override:
+            current_datetime = datetime.now(pytz.utc)
+            print(self.last_update + timedelta(minutes=15))
+            if self.last_update + timedelta(minutes=15) < current_datetime:
+                self.update_points()
+                self.last_update = current_datetime
+                if finalise:
+                    self.status = "E"
+                self.save()
+                print('saved gw')
+
+    def leaderboard(self, limit=None):
+        gws = self.gameweeks.all()
+        lb = PlayerGameweek.objects.filter(gameweek__in=gws).values(name=F('player__user__username')).annotate(
+            sum_points=Sum('points'),
+            count_gameweeks=Count('gameweek'),
+            avg_points=Avg('points'),
+            max_points=Max('points'),
+            min_points=Min('points'),
+        )
+        if limit:
+            return list(lb.order_by('-sum_points')[:limit])
+        return list(lb.order_by('-sum_points'))
+
+
+    def prize_table(self):
+        prize_pool = float(self.prize_pool())
+        tbl = prize_split_table(self.prize_split)
+        for k, v in tbl.items():
+            tbl[k] = v * prize_pool
+        return tbl
+
+    def prize_pool(self):
+        total_plays = PlayerGameweek.objects.annotate(count=Count('predictions')).filter(
+            gameweek__in=self.gameweeks.all(),
+            count__gt=0).count()
+        return total_plays * self.split_of_gameweek_fee
 
 class PredictionManager(models.Manager):
     def update_points(self, score):
@@ -413,6 +554,14 @@ class Prediction(models.Model):
         else:
             return None
 
+
+class PlayerAggregatedGame(models.Model):
+    player = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL)
+    aggregated_game = models.ForeignKey(AggregatedGame, null=True, on_delete=models.SET_NULL)
+    points = models.IntegerField(default=0)
+    paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
 class PlayerGameweekManager(models.Manager):
     def update_points(self, score):
         qs = super().get_queryset()
@@ -427,17 +576,22 @@ class PlayerGameweekManager(models.Manager):
                 print(player, player.points)
         return qs
 
+    def valid_games(self):
+        qs = super().get_queryset().filter(predictions__gt=0)
+        return qs
+
+
 class PlayerGameweek(models.Model):
     player = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL)
     gameweek = models.ForeignKey(Gameweek, null=True, on_delete=models.SET_NULL)
-    predictions = models.ManyToManyField(Prediction)
+    predictions = models.ManyToManyField(Prediction, blank=True, null=True)
     points = models.IntegerField(default=0)
     paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     objects = PlayerGameweekManager()
 
     def __str__(self):
-        return f"{self.player} | {self.gameweek.mini_league} - {self.gameweek}"
+        return f"{self.player} | {self.gameweek}"
 
     class Meta:
         verbose_name = "Player/Gameweek"
@@ -448,21 +602,20 @@ class PlayerGameweek(models.Model):
         self.predictions.update_points(self.gameweek.mini_league.score_structure)
         points = self.predictions.all().aggregate(total_points=Sum('points'))['total_points']
         print(points)
-        '''for pick in self.predictions:
-            points_tally += pick.update_score(self.gameweek.mini_league.score_structure)'''
         self.points = points
         self.save()
 
     def update_paid(self):
         pass
 
+    @property
+    def total_valid_picks(self):
+        return self.predictions.all().count()
+
     def get_fixtures(self):
         fixtures = self.gameweek.fixtures.all()
         return fixtures
 
-    '''def get_predictions(self):
-        picks = Prediction.objects.filter(fixture__in=self.get_fixtures(), player=self.player)
-        return picks'''
 
     def get_joker(self):
         try:

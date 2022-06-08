@@ -1,0 +1,26 @@
+<table class="table table-sm small border">
+    <thead>
+    <th ></th>
+    <th class="text-center">In</th>
+    <th class="text-center">Out</th>
+    <th class="text-center">Total</th>
+    </thead>
+    <tr>
+        <th>Pending</th>
+        <td class="text-center">&pound;{{ pending_transactions.2|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ pending_transactions.3|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ pending_transactions.1|floatformat:2  }}</td>
+    </tr>
+    <tr>
+        <th>Cleared</th>
+        <td class="text-center">&pound;{{ cleared_transactions.2|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ cleared_transactions.3|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ cleared_transactions.1|floatformat:2  }}</td>
+    </tr>
+    <tr>
+        <th>TOTAL</th>
+        <td class="text-center">&pound;{{ all_transactions.3|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ all_transactions.4|floatformat:2  }}</td>
+        <td class="text-center" class="border-2">&pound;{{ all_transactions.2|floatformat:2  }}</td>
+    </tr>
+</table>

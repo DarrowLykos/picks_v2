@@ -2,7 +2,7 @@
 <table class="table table-sm small border">
     <thead>
     <tr>
-        <th>Position</th>
+        <th style="width:5%;">Position</th>
         <th>Player</th>
         <th>Gameweeks</th>
         <th>Average</th>
@@ -11,15 +11,15 @@
         <th>Points</th>
     </tr>
     </thead>
-    {% for player in game.leaderboard %}
+    {% for plr in leaderboard %}
     <tr>
         <td>{{ forloop.counter|ordinal }}</td>
-        <td><a href="{% url 'game:game_detail' pk=game.pk %}?player={{ player.player.id }}">{{ player.player }}</a></td>
-        <td>{{ player.points }}</td>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-        <td>4</td>
+        <td>{{ plr.name }}</td>
+        <td>{{ plr.count_gameweeks }}</td>
+        <td>{{ plr.avg_points }}</td>
+        <td>{{ plr.max_points }}</td>
+        <td>{{ plr.min_points }}</td>
+        <td>{{ plr.sum_points }}</td>
     </tr>
     {% endfor %}
 </table>

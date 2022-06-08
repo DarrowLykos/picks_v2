@@ -1,16 +1,17 @@
+{% load humanize %}
 <table class="table table-sm small border">
     <thead>
     <tr>
+        <th style="width:5%;">Pos</th>
         <th class="text-strong">Player</th>
         <th class="text-center">Points</th>
-        <th class="text-center">Prize</th>
     </tr>
     </thead>
     {% for player in game.leaderboard %}
     <tr>
+        <td>{{ forloop.counter|ordinal }}</td>
         <td class="font-weight-bold"><a href="{% url 'game:game_detail' pk=game.pk %}?player={{ player.player.id }}">{{ player.player }}</a></td>
         <td class="text-center">{{ player.points }}</td>
-        <td class="text-center">£1,000,000</td>
     </tr>
     {% endfor %}
 </table>
