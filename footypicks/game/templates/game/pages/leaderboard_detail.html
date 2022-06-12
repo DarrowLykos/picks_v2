@@ -3,55 +3,66 @@
 {% block title %}Game Detail{% endblock %}
 {% block content %}
 
-<div class="container-fluid">
-    <div class="row border align-right">
+
+<div class="container-fluid main-content-area">
+    <div class="row m-1">
         <div class="col-auto">
-            <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="btn btn-primary">Back to League</a>
+            <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="btn btn-default btn-sm">Back to League</a>
         </div>
+        <div class="btn-group">
         {% if can_predict %}
         <div class="col-auto">
-            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-primary">Predict</a>
+            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-default btn-sm">Predict</a>
         </div>
         {% endif %}
         {% if player_is_owner %}
         <div class="col-auto">
-            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-primary">Edit Leaderboard</a>
+            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-default btn-sm">Edit Leaderboard</a>
         </div>
         {% endif %}
+        </div>
     </div>
-    <div class="row border">
-        <div class="col">
+    <div class="row m-1">
+        <div class="col post-inner-content">
             <h1>{{ game.mini_league.name }}</h1>
         </div>
-        <div class="col-auto">
-            <h3>{{ game.get_status_display }}</h3>
-            <h2>{{ game.name }}</h2>
-        </div>
     </div>
-    <div class="row border">
-        <div class="col-auto">
-            <h5>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
-        </div>
-        <div class="col-auto">
-            <h5>{{ game.get_status_display }} (Last update: {{ game.last_update }})</h5>
-        </div>
-    </div>
-    <div class="row">
+    {% include 'game/partials/messages.html' %}
+    <div class="row m-1">
         <div class="col-lg-2 col-sm">
-            <div class="row">
-                <div class="col border">
+            <div class="row well">
+                <div class="col">
                     {% include 'game/partials/side_menu.html' %}
                     {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
                 </div>
             </div>
         </div>
         <div class="col-lg-10 col-sm">
-            <div class="row">
-                <div class="col-lg-10 col-sm border">
+            <div class="row post-inner-content">
+                <div class="row">
+                    <div class="row">
+                        <div class="col">
+                            <h2 class="alignleft">{{ game.name }}</h2>
+                        </div>
+                        <div class="col ">
+                            <h3 class="alignright">{{ game.get_status_display }}</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="alignleft">{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
+                        </div>
+                        <div class="col ">
+                            <h5 class="alignright">Last update: {{ game.last_update }}</h5>
+                        </div>
+                    </div>
+                    <div id="grad-thin"></div>
+                </div>
+                <div class="col-lg-10 col-sm">
                     <h5>Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=leaderboard %}
                 </div>
-                <div class="col-lg-2 border">
+                <div class="col-lg-2">
                     <h5>Games</h5>
                     {% include 'game/partials/leaderboard_list.html' with leaderboards=games_for_lb %}
                 </div>

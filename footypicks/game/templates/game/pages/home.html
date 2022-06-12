@@ -2,7 +2,29 @@
 {% load static %}
 
 {% block content %}
-
-HELLO WORLD
-
+<div>
+<div class="image">
+      <div class="overlay">
+      </div>
+    </div>
+<div id="grad"></div>
+</div>
+<div class="container main-content-area">
+    <div class="row m-1 post-inner-content">
+        <div class="col-12">
+            {% if user.is_authenticated %}
+            <h4>Your Leagues</h4>
+            {% include 'game/partials/leagues_list.html' %}
+            {% else %}
+            <a class="btn btn-default " href="#">Sign up</a>
+            {% endif %}
+        </div>
+        <div class="col-lg-6 col-sm border">
+            <h4>Recent Fixtures</h4>
+        </div>
+        <div class="col-lg-6 col-sm border">
+            <h4>Upcoming Fixtures</h4>
+        </div>
+    </div>
+</div>
 {% endblock %}

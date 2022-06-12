@@ -1,20 +1,20 @@
 <table class="table table-sm small border">
     <thead>
     <th>Fixture</th>
-    <th>Prediction</th>
-    <th>Joker</th>
-    <th>Points</th>
+    <th class="text-center">Prediction</th>
+    <th class="text-center">Joker</th>
+    <th class="text-center">Points</th>
     </thead>
     <tbody>
     {% for pick in player_picks %}
     <tr>
         <th>{{ pick.fixture.fixture }}</th>
-        <td>{{ pick.pick_as_string }}</td>
-        <td>{% if pick.joker %}
-            <i class="fa-solid fa-xmark"></i><i class="fa-solid fa-2"></i>
+        <td class="text-center">{{ pick.pick_as_string }}</td>
+        <td class="text-center">{% if pick.joker %}
+            <i class="fa-solid fa-xmark red"></i>
             {% endif %}
         </td>
-        <td>{{ pick.points }}</td>
+        <td class="text-center">{{ pick.points }}</td>
     </tr>
     {% endfor %}
     <tr>

@@ -3,46 +3,47 @@
 {% block title %}Mini League{% endblock %}
 {% block content %}
 
-<div class="container-fluid">
-    <div class="row border align-right">
+<div class="container-fluid main-content-area">
+    <div class="row m-1">
         {% if player_is_owner %}
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Invite</a>
-        </div>
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Edit Mini-League</a>
-        </div>
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">New Leaderboard</a>
-        </div>
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">New Game</a>
+        <div class="btn-group">
+            <div class="col-auto pr-1">
+                <a href="#" class="btn btn-default btn-sm">Invite</a>
+            </div>
+            <div class="col-auto pr-1">
+                <a href="#" class="btn btn-default btn-sm">Edit Mini-League</a>
+            </div>
+            <div class="col-auto pr-1">
+                <a href="#" class="btn btn-default btn-sm">New Leaderboard</a>
+            </div>
+            <div class="col-auto pr-1">
+                <a href="#" class="btn btn-default btn-sm">New Game</a>
+            </div>
         </div>
         {% endif %}
         {% if player_is_member and not player_is_owner %}
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Leave</a>
+            <a href="#" class="btn btn-default btn-sm">Leave</a>
         </div>
         {% elif not player_is_member %}
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Join</a>
+            <a href="#" class="btn btn-default btn-sm">Join</a>
         </div>
         {% endif %}
     </div>
-    <div class="row border">
-        <div class="col">
-            <h1>{{ league.name }}</h1>
-        </div>
-        <div class="col-auto">
-            <h2>{{ league.get_status_display }}</h2>
+    <div class="row m-1">
+        <div class="col post-inner-content">
+            <h1 class="entry-title">{{ league.name }}</h1>
         </div>
     </div>
-    <div class="row">
+    {% include 'game/partials/messages.html' %}
+    <div class="row m-1">
         <div class="col-lg-2 col-sm">
-            <div class="row">
-                <div class="col border">
+            <div class="row well">
+                <div class="col">
+                    <h2>{{ league.get_status_display }}</h2>
                     {% include 'game/partials/side_menu.html' %}
-                    <table class="table table-sm small border">
+                    <table class="table table-sm small">
                         <tr>
                             <th style="width:70%;">Entry Cost per Game</th>
                             <td>&pound;{{ league.gameweek_fee }}</td>
@@ -52,12 +53,26 @@
             </div>
         </div>
         <div class="col-lg-10 col-sm">
-            <div class="row">
-                <div class="col-lg-2 col-sm border">
+            <div class="row post-inner-content">
+                <div class="row">
+                    <div class="col">
+                        <h2 class="alignleft">{{ league }}</h2>
+                    </div>
+                    <div class="col ">
+                        <h3 class="alignright">{{ league.get_status_display }}</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col ">
+                        <h5 class="alignright">Last update: {{ league.last_update }}</h5>
+                    </div>
+                </div>
+                <div id="grad-thin"></div>
+                <div class="col-lg-2 col-sm">
                     <h5>League Members</h5>
                     {% include 'game/partials/league_members_list.html' with players=players %}
                 </div>
-                <div class="col-lg-4 col-sm border">
+                <div class="col-lg-4 col-sm">
                     <h5>Games</h5>
                     <h6>Recent</h6>
                     {% include 'game/partials/gameweeks_list.html' with games=prev_games %}
@@ -66,16 +81,9 @@
                     <h6>All</h6>
                     {% include 'game/partials/gameweeks_list.html' with games=games %}
                 </div>
-                <div class="col-lg-6 col-sm border">
-                    <h5>Live Game</h5>
-                    <div class="row">
-                        <div class="col-lg-7 col-sm-6 border">
-                            {% include 'game/partials/fixtures_table.html' with fixtures=game.fixtures.all %}
-                        </div>
-                        <div class="col-lg-5 col-sm-9 border">
-                            {% include 'game/partials/leaderboard.html' with leaderboard=leaderboard %}
-                        </div>
-                    </div>
+                <div class="col-lg-6 col-sm">
+                    <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
+                    {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
                 </div>
                 </div>
             </div>

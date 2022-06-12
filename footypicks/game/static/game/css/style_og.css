@@ -1,0 +1,210 @@
+/* Style Guide for Footy Picks
+Author: Sam Jones
+Colour Scheme - sourced from https://www.schemecolor.com/cocktail-sunset.php
+*/
+
+* {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+    font-family: Helvetica, Arial, sans-serif;
+    letter-spacing: 0.01em;
+}
+
+
+/* -------------------------------------------------------
+ * Colour Scheme
+ * -------------------------------------------------------
+ */
+
+/* Primary Colour - Blue Yonder */
+primary-color {
+    color:#5778A2;
+}
+
+/* Secondary Colour - Air Superiority Blue */
+secondary-color {
+    color:#719AB7;
+}
+
+/* Additional Colour - Eggshell White*/
+eggshell-color {
+    color:#719AB7;
+}
+
+/* Additional Colour - Sunray Yellow */
+sunray-color {
+    color:#DCB44B;
+}
+
+/* Additional Colour - Dark Pastel Red */
+pastelred-color {
+    color:#C53F29;
+}
+
+/* Additional Colour - Kobe Red */
+kobered-color {
+    color:#8A281E;
+}
+
+/* --------------------------
+ * Element Styles
+ * --------------------------
+*/
+
+
+/* --------------------------
+ * Layout Styles
+ * --------------------------
+*/
+
+
+/* -------------------------------------------------------
+ * Icon Colours and Styles
+ * -------------------------------------------------------
+*/
+
+i.gold {
+    color:#AF9500;
+}
+
+i.silver {
+    color:#B4B4B4;
+}
+
+i.bronze {
+    color:#AD8A56;
+}
+
+i.dollar-green {
+    color:#006700;
+}
+
+
+/* Disables the dotted line underneath abbreviations */
+abbr[title] {
+    border-bottom: none;
+    text-decoration: none;
+}
+
+/* Bold text */
+.text-bold{
+    font-weight: bold;
+}
+
+/* -------------
+ * Table Styles
+ * -------------
+*/
+
+
+/* --------------------------
+ * Responsive Styles
+ * --------------------------
+*/
+
+@media screen and (min-width: 35.5em) {
+
+    .legal-license {
+        text-align: left;
+        margin: 0;
+    }
+    .legal-copyright,
+    .legal-links,
+    .legal-links li {
+        text-align: right;
+        margin: 0;
+    }
+
+}
+
+@media screen and (min-width: 48em) {
+
+    .l-wrap,
+    .l-wrap .content {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+    .content .l-wrap {
+        margin-left: -2em;
+        margin-right: -2em;
+    }
+
+    .header,
+    .content {
+        padding-left: 2em;
+        padding-right: 2em;
+    }
+
+    .header h1 {
+        font-size: 320%;
+    }
+    .header h2 {
+        font-size: 128%;
+    }
+
+    .content p {
+        font-size: 1.125em;
+    }
+
+    .code {
+        margin-left: auto;
+        margin-right: auto;
+        border-left-width: 1px;
+        border-right-width: 1px;
+    }
+
+    .table-responsive {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .table-responsive table {
+        border-left-width: 1px;
+        border-right-width: 1px;
+    }
+
+}
+
+@media (max-width: 58em) {
+    /* Only apply this when the window is smaller. Otherwise, the following
+    case results in extra padding on the left:
+        * Make the window small. (Rotate to portrait on a mobile.)
+        * Tap the menu to trigger the active state.
+        * Make the window large again. (Rotate to landscape on mobile.)
+    */
+    #layout.active {
+        position: relative;
+        left: 160px;
+    }
+}
+
+@media (min-width: 58em) {
+
+    #layout {
+        padding-left: 160px; /* left col width "#menu" */
+        left: 0;
+    }
+    #menu {
+        left: 160px;
+    }
+    .menu-link {
+        position: fixed;
+        left: 160px;
+        display: none;
+    }
+    #layout.active .menu-link {
+        left: 160px;
+    }
+
+}

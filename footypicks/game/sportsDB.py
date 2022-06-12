@@ -58,7 +58,8 @@ class GetRoundEvents:
                 fixture.home_score = int(event['intHomeScore'])
                 fixture.away_score = int(event['intAwayScore'])
             if not event['strPostponed'] == "no":
-               fixture.postponed = True
+                fixture.postponed = True
+                fixture.sportsdb_id = None
             fixture.ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
             fixture.ko_time = datetime.strptime(event['strTime'], "%H:%M:%S")
             fixture.save()

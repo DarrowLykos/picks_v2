@@ -1,10 +1,10 @@
-<table class="table table-sm small border">
+<table class="table table-sm small">
     <thead>
     </thead>
     <tbody>
         {% for player in players %}
         <tr>
-            <td>{{ player }}</td>
+            <td><a href="{% url 'game:player_detail' pk=player.id %}">{{ player }}</a></td>
         </tr>
         {% endfor %}
     </tbody>

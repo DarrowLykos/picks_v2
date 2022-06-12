@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView, TemplateView, View
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
@@ -11,11 +11,16 @@ from players.models import Player
 from .models import *
 
 # Create your views here.
-def index(request):
-    return HttpResponse("Hello, world. You're at the game index.")
 
 class HomeView(TemplateView):
     template_name = 'game/pages/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['leagues'] = self.request.user.player.minileague_set.all()
+        return context
+
 
 class MiniLeagueDetail(DetailView):
     model = MiniLeague
@@ -30,9 +35,11 @@ class MiniLeagueDetail(DetailView):
         context['prev_games'] = self.object.get_gameweeks().filter(end_date__lte=datetime.now())[:2]
         context['next_games'] = self.object.get_gameweeks().filter(start_date__gte=datetime.now())[:2]
         context['score'] = self.object.score_structure.get_fields()
-        current_player = self.request.user.player
-        context['player_is_owner'] = self.object.player_is_owner(current_player.id)
-        context['player_is_member'] = self.object.player_is_owner(current_player.id)
+        if self.request.user.is_authenticated:
+            current_player = self.request.user.player
+            context['player_is_owner'] = self.object.player_is_owner(current_player.id)
+            context['player_is_member'] = self.object.player_is_owner(current_player.id)
+        context['primary_leaderboard'] = self.object.leaderboards.get(primary_ag=True).leaderboard()
         return context
 
 class GameweekDetail(DetailView):
@@ -40,15 +47,20 @@ class GameweekDetail(DetailView):
     context_object_name = 'game'
     template_name = 'game/pages/gameweek_detail.html'
 
-    def get(self, *args, **kwargs):
+    '''def get(self, *args, **kwargs):
         obj = self.model.objects.get(pk=kwargs['pk'])
-        '''if obj.view_only:
-            return redirect('game:leaderboard_detail', pk=kwargs['pk'])'''
-        return super().get(*args, **kwargs)
+        if obj.view_only:
+            return redirect('game:leaderboard_detail', pk=kwargs['pk'])
+        return super().get(*args, **kwargs)'''
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.object.refresh_game()
+        context['score'] = self.object.mini_league.score_structure.get_fields()
+        context['games'] = self.object.mini_league.get_gameweeks()
+        context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
+        context['prize_pool'] = self.object.prize_table()
+
         player_selected = self.request.GET.get("player", None)
         if self.request.user.is_authenticated:
             current_player = self.request.user.player
@@ -62,10 +74,7 @@ class GameweekDetail(DetailView):
 
         context['player'] = player_selected
         context['player_picks'] = self.object.get_predictions_by_player(player_selected.id)
-        context['score'] = self.object.mini_league.score_structure.get_fields()
-        context['games'] = self.object.mini_league.get_gameweeks()
-        context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
-        context['prize_pool'] = self.object.prize_table()
+
 
         return context
 
@@ -143,23 +152,24 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                         if pick.home_score != int(y):
                             pick.home_score = int(y)
                             pick.last_changed = datetime.now()
-                            msgs_success.append(f"{pick.fixture} prediction updated")
+                            # msgs_success.append(f"{pick.fixture} prediction updated")
                             changed = True
                     else:
                         if pick.away_score != int(y):
                             pick.away_score = int(y)
-                            msgs_success.append(f"{pick.fixture} prediction updated")
+                            # msgs_success.append(f"{pick.fixture} prediction updated")
                             changed = True
                     print(pick.fixture.fixture, joker, pick.joker)
                     if pick.fixture.fixture == joker and not pick.joker:
                         pick.joker = True
-                        msgs_success.append(f"{pick.fixture} prediction updated")
+                        # msgs_success.append(f"{pick.fixture} prediction updated")
                         changed = True
                     elif pick.fixture != joker:
                         pick.joker = False
                     if changed:
                         pick.last_changed = datetime.now()
                         pick.save()
+                        msgs_success.append(f"{pick.fixture.fixture} prediction updated")
                         changed = False
                         print('saved')
                 else:
@@ -221,7 +231,7 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
 
         return context
 
-class PlayerDetail(LoginRequiredMixin, DetailView):
+class PlayerDetail(DetailView):
     model = Player
     template_name = 'game/pages/player_detail.html'
     context_object_name = 'player'

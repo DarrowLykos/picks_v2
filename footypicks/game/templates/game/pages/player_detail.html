@@ -3,107 +3,135 @@
 {% block title %}Player Profile{% endblock %}
 {% block content %}
 
-<div class="container">
-    <div class="row border align-right">
+<div class="container main-content-area">
+    <div class="row m-1">
         {% if request.user == player.user %}
+        <div class="btn-group">
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Edit Details</a>
+            <a href="#" class="btn btn-default btn-sm">Edit Details</a>
         </div>
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Change Password</a>
+            <a href="#" class="btn btn-default btn-sm">Change Password</a>
         </div>
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Make Payment</a>
+            <a href="#" class="btn btn-default btn-sm">Make Payment</a>
         </div>
         <div class="col-auto">
-            <a href="#" class="btn btn-primary">Payout</a>
+            <a href="#" class="btn btn-default btn-sm">Payout</a>
         </div>
-        {% endif %}
-        {% if request.user.is_authenticated %}
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Logout</a>
-        </div>
-        {% else %}
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary">Signup/Login</a>
         </div>
         {% endif %}
     </div>
-    <div class="row border">
-        <div class="col">
-            <h1>{{ player }}'s Profile</h1>
+    <div class="row m-1">
+        <div class="col post-inner-content">
+            <h1 class="entry-title">{{ player }}'s Profile</h1>
         </div>
-        {% if request.user == player.user %}
-        <div class="col-auto">
-            <h2>{{ player.real_name }}</h2>
-        </div>
-        {% endif %}
     </div>
-    <div class="row">
-        <div class="col-lg-2 col-sm border">
-            <h5>Personal Details</h5>
-            <table class="table table-sm small border">
-                <tr>
-                    <td colspan="2">pic</td>
-                </tr>
-                <tr>
-                    <th>Player since</th>
-                    <td>{{ player.user.date_joined|date:"d/m/Y" }}</td>
-                </tr>
-                <tr>
-                    <th>Prizes</th>
-                    <td>£{{ player.prize_transactions.1 }}</td>
-                </tr>
-                <tr>
-                    <th>Games won</th>
-                    <td>TBC</td>
-                </tr>
-                <tr>
-                    <th>League won</th>
-                    <td>TBC</td>
-                </tr>
-            </table>
+    <div class="row m-1 post-inner-content">
+        <div class="col-lg-2 col-sm-12">
+            <div class="col-lg-12 col-sm">
+                <h5>Personal Details</h5>
+                <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="100%">
+                <table class="table table-sm small">
+                    <tr>
+                        <th>Player since</th>
+                        <td>{{ player.user.date_joined|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prizes</th>
+                        <td>£{{ player.prize_transactions.1|default_if_none:0 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Games won</th>
+                        <td>TBC</td>
+                    </tr>
+                    <tr>
+                        <th>League won</th>
+                        <td>TBC</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="grad-thin"></div>
+            <div class="col-lg-12 col-sm">
+                <h5>Leagues</h5>
+                {% include 'game/partials/leagues_list.html' %}
+            </div>
+            <div id="grad-thin"></div>
         </div>
-        <div class="col-lg-3 col-sm border">
-            <h5>Current Balances</h5>
-            {% include 'game/partials/player_balance.html' %}
-        </div>
-        <div class="col-lg-3 col-sm border">
-            <h5>Leagues</h5>
-            {% include 'game/partials/leagues_list.html' %}
-        </div>
-        <div class="col-lg-4 col-sm border">
-            <h5>Trophy Cabinet</h5>
-            trophy 1<br>
-            trophy 2<br>
-        </div>
-        <div class="col-lg-2 col-sm border">
-            <h5>History</h5>
-            2010:<br>
-            2011:<br>
-            2012:<br>
-            2013:<br>
-        </div>
-        <div class="col-lg-6 col-sm border">
-            <h5>Transaction History</h5>
-            <table class="table table-sm small border">
-                <thead>
+        <div class="col-lg-6 col-sm-12">
+            <div class="col-lg-6 col-sm">
+                <h5>Current Balances</h5>
+                {% if request.user.player == player %}
+                {% include 'game/partials/player_balance.html' %}
+                {% else %}
+                <p>Restricted view</p>
+                {% endif %}
+            </div>
+            <div id="grad-thin"></div>
+            <div class="col-lg-12 col-sm ">
+                <h5>Transaction History</h5>
+                {% if request.user.player == player %}
+                <table class="table table-sm small table-hover">
+                    <thead>
                     <th>Type</th>
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Pending</th>
                     <th>Cleared</th>
-                </thead>
-                {% for tran in all_transactions.5 %}
-                <tr>
-                    <td>{{ tran.get_type_display }}</td>
-                    <td>{{ tran.date|date:"d/m/Y" }}</td>
-                    <td>&pound;{{ tran.amount|floatformat:2  }}</td>
-                    <td>{{ tran.pending }}</td>
-                    <td>{{ tran.confirmed_date|date:"d/m/Y" }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+                    </thead>
+                    {% for tran in all_transactions.5 %}
+                    <tr>
+                        <td>{{ tran.get_type_display }}</td>
+                        <td>{{ tran.date|date:"d/m/Y" }}</td>
+                        <td>&pound;{{ tran.amount|floatformat:2  }}</td>
+                        <td>{{ tran.pending }}</td>
+                        <td>{{ tran.confirmed_date|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p>Restricted view</p>
+                {% endif %}
+            </div>
+            <div id="grad-thin"></div>
+        </div>
+        <div class="col-lg-4 col-sm">
+            <div class="col-lg-12 col-sm">
+                <h5>Trophy Cabinet</h5>
+                <div class="row p-0">
+                    {% if player.trophy_set.all %}
+                    {% for trophy in player.trophy_set.all %}
+                    <div class="col-auto" style="font-size:0.90em;">
+                        <abbr title="{{ trophy.get_type_display }}">
+                            {% if trophy.type == "CHA" %}
+                            <i class="fa-solid fa-trophy gold"></i>
+                            {% elif trophy.type == "ONE" %}
+                            <i class="fa-solid fa-medal gold"></i>
+                            {% elif trophy.type == "SEC" %}
+                            <i class="fa-solid fa-medal silver"></i>
+                            {% elif trophy.type == "THI" %}
+                            <i class="fa-solid fa-medal bronze"></i>
+                            {% elif trophy.type == "MON" %}
+                            <i class="fa-solid fa-sack-dollar dollar-green"></i>
+                            {% endif %}
+                            {{ trophy.description }}
+                        </abbr>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>Even Spurs has more trophies than this!</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div id="grad-thin"></div>
+            <div class="col-lg-12 col-sm">
+                <h5>History</h5>
+                2010:<br>
+                2011:<br>
+                2012:<br>
+                2013:<br>
+            </div>
+            <div id="grad-thin"></div>
         </div>
     </div>
 </div>

@@ -26,7 +26,7 @@ SECRET_KEY = '!+)p=ft^jr+$kni!c1w*9!xaj)*6)ir)4zh!(=b=8a8j!xf#b-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163',]
 
 
 # Application definition
@@ -126,10 +126,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Media files (team logos etc)
+# media files (team logos etc)
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #Message Tags (bubble messages that pop up on the page that can be closed
 

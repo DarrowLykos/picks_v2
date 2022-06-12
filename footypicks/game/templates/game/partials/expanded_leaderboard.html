@@ -1,5 +1,5 @@
 {% load humanize %}
-<table class="table table-sm small border">
+<table class="table table-sm small table-hover border w-100">
     <thead>
     <tr>
         <th style="width:5%;">Position</th>
@@ -16,7 +16,7 @@
         <td>{{ forloop.counter|ordinal }}</td>
         <td>{{ plr.name }}</td>
         <td>{{ plr.count_gameweeks }}</td>
-        <td>{{ plr.avg_points }}</td>
+        <td>{{ plr.avg_points|floatformat:2 }}</td>
         <td>{{ plr.max_points }}</td>
         <td>{{ plr.min_points }}</td>
         <td>{{ plr.sum_points }}</td>

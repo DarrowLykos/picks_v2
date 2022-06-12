@@ -1,5 +1,5 @@
 {% load my_filters %}
-<table class="table table-sm small border">
+<table class="table table-sm small">
     <thead>
     </thead>
     {% for key, item in score %}
@@ -8,7 +8,7 @@
         <th style="width:70%;">{{ key|verbose_name|title }}</th>
         <td>
             {% if "multiplier" in key %}
-            <i class="fa-solid fa-xmark"></i><i class="fa-solid fa-{{ item }}"></i>
+            <i class="fa-solid fa-xmark red"></i><i class="fa-solid fa-{{ item }} red"></i>
             {% else %}
             {{ item }} point(s)
             {% endif %}

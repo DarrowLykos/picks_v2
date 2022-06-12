@@ -1,7 +1,7 @@
 {% load humanize %}
 {% load my_filters %}
 <h5>Prizes</h5>
-<table class="table table-sm small border">
+<table class="table table-sm small">
   {% for k, v in prize_table.items %}
   <tr>
     <th style="width:70%;">{{ k|ordinal }} Place</th>
@@ -18,3 +18,4 @@
     </td>
   </tr>
 </table>
+

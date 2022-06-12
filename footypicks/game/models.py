@@ -294,6 +294,9 @@ class MiniLeague(models.Model):
     def get_aggregated_gameweeks(self):
         return self.leaderboards.all()
 
+    def primary_leaderboard(self):
+        return self.leaderboards.get(primary_ag=True)
+
 
 class Gameweek(models.Model):
 
@@ -405,7 +408,7 @@ class AggregatedGame(models.Model):
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     gameweeks = models.ManyToManyField(Gameweek, related_name="leaderboards")
     mini_league = models.ForeignKey(MiniLeague, on_delete=models.SET_NULL, null=True, related_name="leaderboards")
-    primary_ag = models.BooleanField(default=False) #  determines if this is the primary AG for the mini-league
+    primary_ag = models.BooleanField(verbose_name="Primary Mini-League Leaderboard", default=False) #  determines if this is the primary AG for the mini-league
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     last_update = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField()
