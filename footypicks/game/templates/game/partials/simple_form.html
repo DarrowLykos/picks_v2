@@ -1,0 +1,6 @@
+{% load crispy_forms_tags %}
+<form method="POST" id="join-league-form">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input class="btn btn-default btn-sm m-1" name="submit" type="submit">
+</form>

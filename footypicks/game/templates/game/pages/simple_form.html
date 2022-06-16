@@ -1,0 +1,20 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}Player Profile{% endblock %}
+{% block content %}
+
+<div class="container main-content-area">
+    <div class="row m-1">
+        <div class="col post-title-content">
+            <h1 class="entry-title">{{ title }}</h1>
+        </div>
+    </div>
+    {% include 'game/partials/messages.html' %}
+    <div class="row m-1 post-inner-content">
+        <h2>{{ subtitle }}</h2>
+        {% include 'game/partials/simple_form.html' %}
+    </div>
+
+</div>
+
+{% endblock %}

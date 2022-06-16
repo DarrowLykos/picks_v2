@@ -8,22 +8,22 @@
         {% if request.user == player.user %}
         <div class="btn-group">
         <div class="col-auto">
-            <a href="#" class="btn btn-default btn-sm">Edit Details</a>
+            <a href="{% url 'game:player_edit' %}" class="btn btn-default btn-sm">Edit Details</a>
         </div>
         <div class="col-auto">
-            <a href="#" class="btn btn-default btn-sm">Change Password</a>
+            <a href="{% url 'password_reset' %}" class="btn btn-default btn-sm">Change Password</a>
         </div>
         <div class="col-auto">
-            <a href="#" class="btn btn-default btn-sm">Make Payment</a>
+            <a href="{% url 'game:player_transaction_new' %}" class="btn btn-default btn-sm">Make Payment</a>
         </div>
         <div class="col-auto">
-            <a href="#" class="btn btn-default btn-sm">Payout</a>
+            <a href="{% url 'game:player_transaction_new' %}" class="btn btn-default btn-sm">Payout</a>
         </div>
         </div>
         {% endif %}
     </div>
     <div class="row m-1">
-        <div class="col post-inner-content">
+        <div class="col post-title-content">
             <h1 class="entry-title">{{ player }}'s Profile</h1>
         </div>
     </div>

@@ -1,0 +1,21 @@
+{% extends "game/base.html" %}
+{% load static %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<div class="container main-content-area">
+    <div class="row m-1">
+        <div class="col post-title-content">
+            <h1 class="entry-title">Login</h1>
+        </div>
+    </div>
+    {% include 'game/partials/messages.html' %}
+    <div class="m-1 post-inner-content">
+        {% include 'game/partials/simple_form.html' %}
+        <hr class="title-line">
+        <a href="{% url 'password_reset' %}" class="btn btn-default btn-small">Reset Password</a>
+        <a href="{% url 'game:signup' %}" class="btn btn-default btn-small">Sign up</a>
+    </div>
+
+</div>
+{% endblock %}

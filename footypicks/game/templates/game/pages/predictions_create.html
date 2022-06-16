@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %}Predictions{% endblock %}
 {% block content %}
+{% load crispy_forms_tags %}
 
 <div class="container main-content-area">
     <div class="row m-1">
@@ -10,7 +11,7 @@
         </div>
     </div>
     <div class="row m-1">
-        <div class="col post-inner-content">
+        <div class="col post-title-content">
             <h1 class="entry-title">{{ game.mini_league.name }}</h1>
         </div>
     </div>

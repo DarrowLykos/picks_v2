@@ -16,13 +16,13 @@
         {% endif %}
         {% if player_is_owner %}
         <div class="col-auto">
-            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-default btn-sm">Edit Game</a>
+            <a href="{% url 'game:game_edit' pk=game.pk %}" class="btn btn-default btn-sm">Edit Game</a>
         </div>
         {% endif %}
 
     </div>
     <div class="row m-1">
-        <div class="col post-inner-content">
+        <div class="col post-title-content">
                 <h1 class="entry-title">{{ game.mini_league.name }}</h1>
         </div>
     </div>

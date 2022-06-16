@@ -3,11 +3,12 @@
 
 {% block content %}
 <div>
-<div class="image">
-      <div class="overlay">
-      </div>
-    </div>
-<div id="grad"></div>
+    <div id="grad-reverse"></div>
+    <div class="image">
+          <div class="overlay">
+          </div>
+        </div>
+    <div id="grad"></div>
 </div>
 <div class="container main-content-area">
     <div class="row m-1 post-inner-content">
@@ -16,7 +17,7 @@
             <h4>Your Leagues</h4>
             {% include 'game/partials/leagues_list.html' %}
             {% else %}
-            <a class="btn btn-default " href="#">Sign up</a>
+            <a class="btn btn-default " href="{% url 'game:signup' %}">Sign up</a>
             {% endif %}
         </div>
         <div class="col-lg-6 col-sm border">

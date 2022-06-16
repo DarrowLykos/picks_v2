@@ -8,31 +8,27 @@
         {% if player_is_owner %}
         <div class="btn-group">
             <div class="col-auto pr-1">
-                <a href="#" class="btn btn-default btn-sm">Invite</a>
+                <a href="{% url 'game:minileague_invite' pk=league.pk %}" class="btn btn-default btn-sm">Invite</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="#" class="btn btn-default btn-sm">Edit Mini-League</a>
+                <a href="{% url 'game:minileague_edit' pk=league.pk %}" class="btn btn-default btn-sm">Edit Mini-League</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="#" class="btn btn-default btn-sm">New Leaderboard</a>
+                <a href="{% url 'game:leaderboard_create' %}" class="btn btn-default btn-sm">New Leaderboard</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="#" class="btn btn-default btn-sm">New Game</a>
+                <a href="{% url 'game:game_create' %}" class="btn btn-default btn-sm">New Game</a>
             </div>
         </div>
         {% endif %}
-        {% if player_is_member and not player_is_owner %}
+        {% if not player_is_member %}
         <div class="col-auto">
-            <a href="#" class="btn btn-default btn-sm">Leave</a>
-        </div>
-        {% elif not player_is_member %}
-        <div class="col-auto">
-            <a href="#" class="btn btn-default btn-sm">Join</a>
+            <a href="{% url 'game:minileague_join' pk=league.pk %}" class="btn btn-default btn-sm">Join</a>
         </div>
         {% endif %}
     </div>
     <div class="row m-1">
-        <div class="col post-inner-content">
+        <div class="col post-title-content">
             <h1 class="entry-title">{{ league.name }}</h1>
         </div>
     </div>
@@ -41,7 +37,6 @@
         <div class="col-lg-2 col-sm">
             <div class="row well">
                 <div class="col">
-                    <h2>{{ league.get_status_display }}</h2>
                     {% include 'game/partials/side_menu.html' %}
                     <table class="table table-sm small">
                         <tr>

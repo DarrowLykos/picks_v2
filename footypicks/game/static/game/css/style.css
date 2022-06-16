@@ -366,6 +366,11 @@ footer.entry-meta {
     color: #444;
     font-size: 28px;
     margin-bottom: 0px;
+    min-height: 10px;
+}
+
+.entry-title post-inner-content {
+    min-height: 10px !important;
 }
 
 .entry-title a {
@@ -431,6 +436,14 @@ hr.section-divider {
 
 .post-inner-content {
     padding: 25px 25px;
+    background-color: #fff;
+    border: 1px solid #dadada;
+    border-top: none;
+    min-height: 520px;
+}
+
+.post-title-content {
+    padding: 15px 15px;
     background-color: #fff;
     border: 1px solid #dadada;
     border-top: none;
@@ -674,6 +687,7 @@ object {
     border: 1px solid #DADADA;
     overflow: hidden;
     clear: both;
+    min-height: 520px;
 }
 
 #secondary .widget > h3 {
@@ -2645,9 +2659,19 @@ object-fit: cover;
 margin: -10px 0px 0px -180px;
 }
 
+#grad-nav {
+    height: 15px;
+  background-image: linear-gradient(#000000, #DA4453, #F2F2F2);
+}
+
 #grad {
     height: 15px;
   background-image: linear-gradient(#DA4453, #F2F2F2);
+}
+
+#grad-reverse {
+    height: 15px;
+  background-image: linear-gradient(#000000, #DA445350);
 }
 
 #grad-thin {

@@ -17,14 +17,14 @@
         {% endif %}
         {% if player_is_owner %}
         <div class="col-auto">
-            <a href="{% url 'game:game_predict' pk=game.pk %}" class="btn btn-default btn-sm">Edit Leaderboard</a>
+            <a href="{% url 'game:leaderboard_edit' pk=leaderboard.pk %}" class="btn btn-default btn-sm">Edit Leaderboard</a>
         </div>
         {% endif %}
         </div>
     </div>
     <div class="row m-1">
-        <div class="col post-inner-content">
-            <h1>{{ game.mini_league.name }}</h1>
+        <div class="col post-title-content">
+            <h1 class="entry-title">{{ game.mini_league.name }}</h1>
         </div>
     </div>
     {% include 'game/partials/messages.html' %}

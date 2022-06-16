@@ -1,31 +1,76 @@
 from django.http import HttpResponse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView, TemplateView, View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView, TemplateView, View, RedirectView
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
-from .forms import DummyPredictionForm
+from .forms import DummyPredictionForm, JoinLeagueForm
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from players.models import Player
+from players.models import Player, Transaction
 from .models import *
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
-# Create your views here.
+'''
+Custom Template Views
+'''
+
+class CreateTemplate(CreateView):
+    template_name = 'game/pages/simple_form.html'
+    fields = '__all__'
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create'
+        context['subtitle'] = 'Create'
+        return context
+
+
+class UpdateTemplate(UpdateView):
+    template_name = 'game/pages/simple_form.html'
+    fields = '__all__'
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit'
+        context['subtitle'] = 'Edit'
+        return context
+
+
+'''
+Home page View. Only seen by anons
+'''
 
 class HomeView(TemplateView):
     template_name = 'game/pages/home.html'
 
-    def get_context_data(self, **kwargs):
+    '''def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context['leagues'] = self.request.user.player.minileague_set.all()
-        return context
+        return context'''
 
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            league_id = self.request.user.player.minileague_set.all().order_by('-pk')[0].id
+            return redirect('game:minileague_detail', pk=league_id)
+        else:
+            return super().get(request, *args, **kwargs)
+            # return redirect('login')
+
+
+'''
+Mini League Views
+'''
 
 class MiniLeagueDetail(DetailView):
     model = MiniLeague
     template_name = 'game/pages/minileague_detail.html'
     context_object_name = 'league'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,6 +86,83 @@ class MiniLeagueDetail(DetailView):
             context['player_is_member'] = self.object.player_is_owner(current_player.id)
         context['primary_leaderboard'] = self.object.leaderboards.get(primary_ag=True).leaderboard()
         return context
+
+
+class MiniLeagueJoin(LoginRequiredMixin, FormMixin, DetailView):
+    model = MiniLeague
+    template_name = 'game/pages/simple_form.html'
+    context_object_name = 'league'
+    form_class = JoinLeagueForm
+    success_url = ''
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Join League'
+        context['subtitle'] = self.object.name
+        return context
+
+    def get(self, request, *args, **kwargs):
+        statuses = ("E", "D",)
+        obj = self.model.objects.get(pk=kwargs['pk'])
+        if any(ele in statuses for ele in obj.status):
+            messages.warning(self.request, "MiniLeague closed to new members")
+            return redirect('game:minileague_detail', kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        post = request.POST
+        print(post)
+        attempt_password = post['league_password']
+        obj = self.model.objects.get(pk=kwargs['pk'])
+        correct_password = obj.password
+        print("P", correct_password)
+
+        if obj.players.filter(pk=request.user.player.id).count() == 1:
+            messages.info(self.request, "Already a member of the Mini-league")
+            return redirect('game:minileague_detail', kwargs['pk'])
+        elif attempt_password == correct_password:
+            obj.players.add(request.user.player)
+            obj.save()
+            messages.success(self.request, "Successfully joined Mini-League")
+            return redirect('game:minileague_detail', kwargs['pk'])
+        else:
+            messages.error(self.request, "Incorrect password provided")
+            return redirect('game:minileague_join', kwargs['pk'])
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('game:minileague_detail')
+
+
+class MiniLeagueInvite(TemplateView):
+    template_name = 'game/pages/minileague_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        league_id = kwargs['pk']
+        league = MiniLeague.objects.get(pk=league_id)
+        if self.request.user.is_authenticated and league.player_is_owner(self.request.user.player.id):
+            messages.info(request, f"Password to join league is: '{league.password}'. Share this password with those who want to join")
+        else:
+            messages.warning(request, f"Only the League Owner can see the League Password")
+        return redirect('game:minileague_detail', pk=league_id)
+
+
+class MiniLeagueEdit(UpdateTemplate):
+    model = MiniLeague
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit League'
+        context['subtitle'] = self.object.name
+        return context
+
+'''
+Game Views
+'''
 
 class GameweekDetail(DetailView):
     model = Gameweek
@@ -62,12 +184,14 @@ class GameweekDetail(DetailView):
         context['prize_pool'] = self.object.prize_table()
 
         player_selected = self.request.GET.get("player", None)
-        if self.request.user.is_authenticated:
+        statuses = ("E", "D",)
+        if self.request.user.is_authenticated and not any(ele in statuses for ele in self.object.status):
             current_player = self.request.user.player
             context['can_predict'] = self.object.check_player_is_member(current_player.id)
         if player_selected:
             player_selected = Player.objects.get(pk=player_selected)
         elif self.request.user.is_authenticated:
+            current_player = self.request.user.player
             player_selected = current_player
         else:
             return context
@@ -78,6 +202,29 @@ class GameweekDetail(DetailView):
 
         return context
 
+
+class GameweekCreate(CreateTemplate):
+    model = Gameweek
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create Game'
+        return context
+
+
+class GameweekEdit(UpdateTemplate):
+    model = Gameweek
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Game'
+        context['subtitle'] = self.object.name
+        return context
+
+
+'''
+Gameweek Leaderboard / Aggregated Game Views
+'''
 
 class GameweekLeaderboardDetail(DetailView):
     model = AggregatedGame
@@ -105,6 +252,29 @@ class GameweekLeaderboardDetail(DetailView):
         return context
 
 
+class GameweekLeaderboardCreate(CreateTemplate):
+    model = AggregatedGame
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create Leaderboard'
+        return context
+
+
+class GameweekLeaderboardEdit(UpdateTemplate):
+    model = AggregatedGame
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Leaderboard'
+        context['subtitle'] = self.object.name
+        return context
+
+
+'''
+Prediction Views
+'''
+
 class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
     model = Gameweek
     template_name = 'game/pages/predictions_create.html'
@@ -113,7 +283,16 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
     success_url = ''
 
     def get_success_url(self):
-        return reverse_lazy('game:game_detail' )
+        return reverse_lazy('game:game_detail')
+
+    def get(self, request, *args, **kwargs):
+        obj = self.model.objects.get(pk=kwargs['pk']).mini_league
+        print(obj)
+        print(obj.player_is_member(request.user.player.id))
+        if not obj.player_is_member(request.user.player.id):
+            messages.warning(self.request, "Only League Members can make predictions")
+            return redirect('game:game_detail', kwargs['pk'])
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         def test_input(val):
@@ -231,6 +410,11 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
 
         return context
 
+
+'''
+Player Views (move to own app eventually)
+'''
+
 class PlayerDetail(DetailView):
     model = Player
     template_name = 'game/pages/player_detail.html'
@@ -245,4 +429,36 @@ class PlayerDetail(DetailView):
         context['all_transactions'] = self.object.all_transactions()
         context['leagues'] = self.object.minileague_set.all()
         return context
+
+
+class PlayerSignUp(CreateTemplate):
+    form_class = UserCreationForm
+    success_url = reverse_lazy("login")
+    fields = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'New Player'
+        context['subtitle'] = 'Your Details'
+        return context
+
+class PlayerEdit(LoginRequiredMixin, UpdateTemplate):
+    model = Player
+    fields = ['thumbnail', ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit Details'
+        return context
+
+    def get_object(self, queryset=None):
+        User.objects.get(pk=self.request.user.player.id)
+
+
+class PlayerTransactionCreate(LoginRequiredMixin, CreateTemplate):
+    model = Transaction
+
+
+class PlayerTransactionEdit(LoginRequiredMixin, UpdateTemplate):
+    model = Transaction
 

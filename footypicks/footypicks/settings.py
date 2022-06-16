@@ -26,7 +26,7 @@ SECRET_KEY = '!+)p=ft^jr+$kni!c1w*9!xaj)*6)ir)4zh!(=b=8a8j!xf#b-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163',]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 'sjones187.ddns.net', ]
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'game.apps.GameConfig',
     'players.apps.PlayersConfig',
     'django_extensions',
+    'crispy_forms',
 
 ]
 
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'footypicks.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,7 +132,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-#Message Tags (bubble messages that pop up on the page that can be closed
+# Message Tags (bubble messages that pop up on the page that can be closed
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
@@ -140,3 +141,17 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+# Login
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Crispy Forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Email backend
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent-emails')

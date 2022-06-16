@@ -23,11 +23,15 @@ urlpatterns = [
     path('', include(('game.urls', 'game'), namespace='game')),
     path('admin/', admin.site.urls),
     path('players/', include('players.urls')),
+    path('accounts/', include("django.contrib.auth.urls")),
 ]
 
 # Serving the media files in development mode
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    import debug_toolbar
+
+    urlpatterns = [path('__debug__/', include(debug_toolbar.urls)),] + urlpatterns
 else:
     urlpatterns += staticfiles_urlpatterns()
-
