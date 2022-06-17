@@ -3,6 +3,7 @@
     <thead>
     </thead>
     <tbody>
+        {% if leaderboards %}
         {% for lb in leaderboards %}
         <tr>
             <th style="width:70%;">
@@ -17,5 +18,8 @@
             <td>{{ lb.get_status_display }}</td>
         </tr>
         {% endfor %}
+        {% else %}
+        <tr><td>No games</td></tr>
+        {% endif %}
     </tbody>
 </table>

@@ -1,0 +1,36 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}Game Detail{% endblock %}
+{% block content %}
+
+<div class="container main-content-area" xmlns="http://www.w3.org/1999/html">
+    <div class="row m-1">
+        <div class="col-auto">
+            <a href="{% url 'game:minileague_detail' pk=object_list.0.mini_league.id %}" class="button btn-default button">Back to League</a>
+        </div>
+    </div>
+    <div class="row m-1">
+        <div class="col post-title-content">
+            <h1 class="entry-title">Games List</h1>
+        </div>
+    </div>
+    {% include 'game/partials/messages.html' %}
+    <div class="row m-1">
+        <div class="col-lg-12 col-sm">
+            <div class="row post-inner-content">
+                <div class="row">
+                    <div class="col">
+                        <h2 class="alignleft">{{ object_list.0.mini_league.name }}</h2>
+                    </div>
+                </div>
+                <div id="grad-thin"></div>
+                <div class="col-lg-12 col-sm">
+                    {% include 'game/partials/gameweeks_list.html' with games=object_list %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+    {% endblock %}

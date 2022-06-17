@@ -8,16 +8,16 @@
         {% if request.user == player.user %}
         <div class="btn-group">
         <div class="col-auto">
-            <a href="{% url 'game:player_edit' %}" class="btn btn-default btn-sm">Edit Details</a>
+            <a href="{% url 'game:player_edit' %}" class="button btn-default read-more">Edit Details</a>
         </div>
         <div class="col-auto">
-            <a href="{% url 'password_reset' %}" class="btn btn-default btn-sm">Change Password</a>
+            <a href="{% url 'password_change' %}" class="button btn-default read-more">Change Password</a>
         </div>
         <div class="col-auto">
-            <a href="{% url 'game:player_transaction_new' %}" class="btn btn-default btn-sm">Make Payment</a>
+            <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Make Payment</a>
         </div>
         <div class="col-auto">
-            <a href="{% url 'game:player_transaction_new' %}" class="btn btn-default btn-sm">Payout</a>
+            <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Payout</a>
         </div>
         </div>
         {% endif %}
@@ -31,7 +31,11 @@
         <div class="col-lg-2 col-sm-12">
             <div class="col-lg-12 col-sm">
                 <h5>Personal Details</h5>
+                {% if player.thumbnail %}
                 <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="100%">
+                {% else %}
+                <img class="p-1" src="{% static 'game/img/default.png' %}" alt="Profile Picture" width="100%">
+                {% endif %}
                 <table class="table table-sm small">
                     <tr>
                         <th>Player since</th>
@@ -69,26 +73,10 @@
             </div>
             <div id="grad-thin"></div>
             <div class="col-lg-12 col-sm ">
-                <h5>Transaction History</h5>
+                <h5>Recent Transaction History</h5>
                 {% if request.user.player == player %}
-                <table class="table table-sm small table-hover">
-                    <thead>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Pending</th>
-                    <th>Cleared</th>
-                    </thead>
-                    {% for tran in all_transactions.5 %}
-                    <tr>
-                        <td>{{ tran.get_type_display }}</td>
-                        <td>{{ tran.date|date:"d/m/Y" }}</td>
-                        <td>&pound;{{ tran.amount|floatformat:2  }}</td>
-                        <td>{{ tran.pending }}</td>
-                        <td>{{ tran.confirmed_date|date:"d/m/Y" }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                {% include 'game/partials/transaction_list.html' with transactions=all_transactions %}
+                <a class="btn btn-default read-more mb-1" href="#">More Transactions</a>
                 {% else %}
                 <p>Restricted view</p>
                 {% endif %}

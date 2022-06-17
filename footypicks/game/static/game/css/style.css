@@ -52,7 +52,7 @@ body {
     word-wrap: break-word;
     font-family: 'Open Sans', sans-serif;
     line-height: 1.7;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 a {
@@ -826,7 +826,7 @@ object {
 .woocommerce button.button.alt, .woocommerce input.button.alt,
 a.more-link {
     background-color: #DA4453;
-    border-color: #DA4453;
+    border-color: #DA445320;
     -webkit-transition: background-color 0.3s linear;
     -moz-transition: background-color 0.3s linear;
     -o-transition: background-color 0.3s linear;
@@ -884,7 +884,7 @@ button, .button {
     border: none;
     text-transform: uppercase;
     -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: 15px 15px 0px 0px;
     color: #fff;
     font-size: 12px;
     padding: 5px 12px;

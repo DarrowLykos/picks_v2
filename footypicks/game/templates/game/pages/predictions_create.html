@@ -7,7 +7,7 @@
 <div class="container main-content-area">
     <div class="row m-1">
         <div class="col-auto">
-            <a href="{% url 'game:game_detail' pk=game.pk %}" class="btn btn-default">Back to Game</a>
+            <a href="{% url 'game:game_detail' pk=game.pk %}" class="button btn-default">Back to Game</a>
         </div>
     </div>
     <div class="row m-1">
@@ -113,17 +113,17 @@
                     {% endif %}
                 </select>
                 {% if not game.status == "E" %}
-                <button class="btn btn-default btn-sm m-1" name="submit" type="submit">Submit</button>
+                <button class="btn btn-default read-more m-1" name="submit" type="submit">Submit</button>
                 {% endif %}
             </form>
         </div>
         <div class="col-lg-4 col-sm-12">
             <div class="row post-inner-content">
                 <div class="col">
+                    {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
+                    <div id="grad-thin"></div>
                     <h5>Scoring</h5>
                     {% include 'game/partials/score_structure.html' with score=score %}
-                    <div id="grad-thin"></div>
-                    {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
                     <div id="grad-thin"></div>
                 </div>
             </div>

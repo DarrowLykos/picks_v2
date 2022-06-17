@@ -1,17 +1,21 @@
 <div class="row">
     <div class="col-lg-12 col-sm-4">
-    <h5>Scoring</h5>
-    {% include 'game/partials/score_structure.html' with score=score %}
+        <h5>Scoring</h5>
+        {% include 'game/partials/score_structure.html' with score=score %}
     </div>
     <hr class="title-line">
     <div class="col-lg-12 col-sm-4">
-    <h5>Leaderboards</h5>
-    {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
+        <h5>Leaderboards</h5>
+        {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
     </div>
     <hr class="title-line">
     <div class="col-lg-12 col-sm-4">
-    <h5>Games</h5>
-    {% include 'game/partials/leaderboard_list.html' with leaderboards=games|slice:":5" %}
+        <h5>Next 3 Games</h5>
+        {% include 'game/partials/leaderboard_list.html' with leaderboards=next_games %}
+    </div>
+    <div class="col-lg-12 col-sm-4">
+        <h5>Previous 3 Games</h5>
+        {% include 'game/partials/leaderboard_list.html' with leaderboards=prev_games %}
     </div>
     <hr class="title-line">
 </div>

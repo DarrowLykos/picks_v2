@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView, TemplateView, View, RedirectView
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
-from .forms import DummyPredictionForm, JoinLeagueForm
+from .forms import DummyPredictionForm, JoinLeagueForm, PlayerDetailsForm
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -76,9 +76,10 @@ class MiniLeagueDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['leaderboards'] = self.object.get_aggregated_gameweeks()
         context['players'] = self.object.players.all().order_by('user__username')
-        context['games'] = self.object.get_gameweeks()
-        context['prev_games'] = self.object.get_gameweeks().filter(end_date__lte=datetime.now())[:2]
-        context['next_games'] = self.object.get_gameweeks().filter(start_date__gte=datetime.now())[:2]
+        games = self.object.get_gameweeks()
+        context['games'] = games
+        context['prev_games'] = games.filter(end_date__lte=datetime.now()).order_by('-end_date')[:3]
+        context['next_games'] = games.filter(start_date__gte=datetime.now())[:3]
         context['score'] = self.object.score_structure.get_fields()
         if self.request.user.is_authenticated:
             current_player = self.request.user.player
@@ -107,7 +108,13 @@ class MiniLeagueJoin(LoginRequiredMixin, FormMixin, DetailView):
         if any(ele in statuses for ele in obj.status):
             messages.warning(self.request, "MiniLeague closed to new members")
             return redirect('game:minileague_detail', kwargs['pk'])
+
         return super().get(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['league_password'] = self.request.GET.get('password', None)
+        return initial
 
 
     def post(self, request, *args, **kwargs):
@@ -145,7 +152,9 @@ class MiniLeagueInvite(TemplateView):
         league_id = kwargs['pk']
         league = MiniLeague.objects.get(pk=league_id)
         if self.request.user.is_authenticated and league.player_is_owner(self.request.user.player.id):
-            messages.info(request, f"Password to join league is: '{league.password}'. Share this password with those who want to join")
+            url = request.build_absolute_uri(reverse('game:minileague_join', kwargs={'pk': league_id}))
+            url += f"?password={league.password}"
+            messages.info(request, f" Share Link: <a href='{url}'>{url}</a>")
         else:
             messages.warning(request, f"Only the League Owner can see the League Password")
         return redirect('game:minileague_detail', pk=league_id)
@@ -179,7 +188,10 @@ class GameweekDetail(DetailView):
         context = super().get_context_data(**kwargs)
         self.object.refresh_game()
         context['score'] = self.object.mini_league.score_structure.get_fields()
-        context['games'] = self.object.mini_league.get_gameweeks()
+        games = self.object.mini_league.get_gameweeks()
+        context['games'] = games
+        context['prev_games'] = games.filter(end_date__lte=datetime.now()).order_by('-end_date')[:3]
+        context['next_games'] = games.filter(start_date__gte=datetime.now())[:3]
         context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
         context['prize_pool'] = self.object.prize_table()
 
@@ -201,6 +213,16 @@ class GameweekDetail(DetailView):
 
 
         return context
+
+class GameweekList(ListView):
+    model = Gameweek
+    template_name = 'game/pages/gameweek_list.html'
+
+    def get_queryset(self, *args, **kwargs):
+        league_id = self.kwargs.get('pk')
+        qs = super(GameweekList, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(mini_league=league_id)
+        return qs
 
 
 class GameweekCreate(CreateTemplate):
@@ -242,7 +264,10 @@ class GameweekLeaderboardDetail(DetailView):
         self.object.refresh_game()
 
         context['score'] = self.object.mini_league.score_structure.get_fields()
-        context['games'] = self.object.mini_league.get_gameweeks()
+        games = self.object.mini_league.get_gameweeks()
+        context['games'] = games
+        context['prev_games'] = games.filter(end_date__lte=datetime.now()).order_by('-end_date')[:3]
+        context['next_games'] = games.filter(start_date__gte=datetime.now())[:3]
         # context['player_games'] = PlayerGameweek.objects.filter(gameweeks__in=self.object.mini_league.get_gameweeks())
         context['games_for_lb'] = self.object.gameweeks.all()
         context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
@@ -426,7 +451,8 @@ class PlayerDetail(DetailView):
 
         context['cleared_transactions'] = self.object.transaction_balances(pending=False)
         context['pending_transactions'] = self.object.transaction_balances(pending=True)
-        context['all_transactions'] = self.object.all_transactions()
+        context['all_transactions'] = self.object.all_transactions()[5][:10]
+        print("P", self.object.all_transactions()[:10])
         context['leagues'] = self.object.minileague_set.all()
         return context
 
@@ -442,23 +468,76 @@ class PlayerSignUp(CreateTemplate):
         context['subtitle'] = 'Your Details'
         return context
 
-class PlayerEdit(LoginRequiredMixin, UpdateTemplate):
-    model = Player
-    fields = ['thumbnail', ]
+    def form_valid(self, form):
+        user = form.save()
+        new_player = Player.objects.create(user=user)
+        new_player.save()
+        return super().form_valid(form)
+
+class PlayerEdit(LoginRequiredMixin, FormView):
+    form_class = PlayerDetailsForm
+    template_name = 'game/pages/simple_form.html'
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Edit Details'
+        context['subtitle'] = 'Your Details'
         return context
 
     def get_object(self, queryset=None):
-        User.objects.get(pk=self.request.user.player.id)
+        return Player.objects.get(pk=self.request.user.player.id)
+
+    def get_success_url(self):
+        player = self.get_object()
+        return reverse_lazy('game:player_edit')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['display_pic'] = self.get_object().thumbnail
+        initial['username'] = self.get_object().user.username
+        return initial
+
+    def form_valid(self, form):
+
+        form = form.cleaned_data
+        player = self.get_object()
+        user = player.user
+        if not user.username == form['username']:
+            user.username = form['username']
+            user.save()
+            messages.success(self.request, "Username changed")
+        print(player.thumbnail)
+        print(form['display_pic'])
+        print(form)
+        if not player.thumbnail == form['display_pic']:
+            player.thumbnail = form['display_pic']
+            player.save()
+            messages.success(self.request, "Display pic changed")
+        return super().form_valid(form)
 
 
 class PlayerTransactionCreate(LoginRequiredMixin, CreateTemplate):
     model = Transaction
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'New Transaction'
+        context['subtitle'] = 'Transaction Details'
+        return context
 
 class PlayerTransactionEdit(LoginRequiredMixin, UpdateTemplate):
     model = Transaction
+
+class PlayerTransactionList(LoginRequiredMixin, ListView):
+    model = Transaction
+    template_name = 'game/pages/transaction_list.html'
+
+    def get_queryset(self, *args, **kwargs):
+        player = self.request.user.player
+        qs = super(PlayerTransactionList, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(player=player)
+        print(qs)
+        return qs
+
 

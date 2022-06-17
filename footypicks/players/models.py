@@ -8,7 +8,7 @@ class Player(models.Model):
     # This model extends the user model to allow additional fields like display pics etc
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    thumbnail = models.ImageField(upload_to='player-pics/', blank=True, null=True)
+    thumbnail = models.ImageField(upload_to='player-pics/', blank=True, null=True, default='')
 
     def __str__(self):
         return self.user.username

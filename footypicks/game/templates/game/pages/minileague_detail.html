@@ -8,22 +8,22 @@
         {% if player_is_owner %}
         <div class="btn-group">
             <div class="col-auto pr-1">
-                <a href="{% url 'game:minileague_invite' pk=league.pk %}" class="btn btn-default btn-sm">Invite</a>
+                <a href="{% url 'game:minileague_invite' pk=league.pk %}" class="button btn-default read-more">Invite</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:minileague_edit' pk=league.pk %}" class="btn btn-default btn-sm">Edit Mini-League</a>
+                <a href="{% url 'game:minileague_edit' pk=league.pk %}" class="button btn-default read-more">Edit Mini-League</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:leaderboard_create' %}" class="btn btn-default btn-sm">New Leaderboard</a>
+                <a href="{% url 'game:leaderboard_create' %}" class="button btn-default read-more">New Leaderboard</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:game_create' %}" class="btn btn-default btn-sm">New Game</a>
+                <a href="{% url 'game:game_create' %}" class="button btn-default read-more">New Game</a>
             </div>
         </div>
         {% endif %}
         {% if not player_is_member %}
         <div class="col-auto">
-            <a href="{% url 'game:minileague_join' pk=league.pk %}" class="btn btn-default btn-sm">Join</a>
+            <a href="{% url 'game:minileague_join' pk=league.pk %}" class="button btn-default read-more">Join</a>
         </div>
         {% endif %}
     </div>
@@ -37,13 +37,15 @@
         <div class="col-lg-2 col-sm">
             <div class="row well">
                 <div class="col">
-                    {% include 'game/partials/side_menu.html' %}
+                    <h5>Entry Cost</h5>
                     <table class="table table-sm small">
                         <tr>
-                            <th style="width:70%;">Entry Cost per Game</th>
+                            <th style="width:70%;">Per Game</th>
                             <td>&pound;{{ league.gameweek_fee }}</td>
                         </tr>
                     </table>
+                    <hr class="title-line">
+                    {% include 'game/partials/side_menu.html' %}
                 </div>
             </div>
         </div>
@@ -63,18 +65,15 @@
                     </div>
                 </div>
                 <div id="grad-thin"></div>
-                <div class="col-lg-2 col-sm">
-                    <h5>League Members</h5>
-                    {% include 'game/partials/league_members_list.html' with players=players %}
+                <div class="col-lg-3 col-sm">
+                    <h5>Leaderboards</h5>
+                    {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
                 </div>
-                <div class="col-lg-4 col-sm">
+                <div class="col-lg-3 col-sm">
                     <h5>Games</h5>
-                    <h6>Recent</h6>
-                    {% include 'game/partials/gameweeks_list.html' with games=prev_games %}
-                    <h6>Upcoming</h6>
-                    {% include 'game/partials/gameweeks_list.html' with games=next_games %}
-                    <h6>All</h6>
-                    {% include 'game/partials/gameweeks_list.html' with games=games %}
+                    {% include 'game/partials/gameweeks_list.html' with games=prev_games heading="Previous" %}
+                    {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
+                    <a href="{% url 'game:gameweek_list' pk=league.id %}" class="btn btn-default read-more">All Games</a>
                 </div>
                 <div class="col-lg-6 col-sm">
                     <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
