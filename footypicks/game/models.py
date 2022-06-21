@@ -318,7 +318,7 @@ class Gameweek(models.Model):
     split_of_gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
     view_only = models.BooleanField(default=False)  # turns the Gameweek into a leaderboard
     prize_split = models.CharField(max_length=1, choices=PRIZE_SPLIT_LIST, default="1")
-    last_refresh = models.DateTimeField()
+    # last_refresh = models.DateTimeField()
 
     def __str__(self):
         return self.name
@@ -455,7 +455,7 @@ class AggregatedGame(models.Model):
 
     def leaderboard(self, limit=None):
         gws = self.gameweeks.all()
-        lb = PlayerGameweek.objects.filter(gameweek__in=gws).values(name=F('player__user__username')).annotate(
+        lb = PlayerGameweek.objects.filter(gameweek__in=gws, valid=True).values(name=F('player__user__username')).annotate(
             sum_points=Sum('points'),
             count_gameweeks=Count('gameweek'),
             avg_points=Avg('points'),
@@ -590,6 +590,7 @@ class PlayerGameweek(models.Model):
     predictions = models.ManyToManyField(Prediction, blank=True, null=True)
     points = models.IntegerField(default=0)
     paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    valid = models.BooleanField(default=False)
 
     objects = PlayerGameweekManager()
 
@@ -600,6 +601,10 @@ class PlayerGameweek(models.Model):
         verbose_name = "Player/Gameweek"
         verbose_name_plural = "Players/Gameweeks"
 
+    def save(self, *args, **kwargs):
+        if self.predictions.all().count() > 0:
+            self.valid = True
+        super(PlayerGameweek, self).save(*args, **kwargs)
 
     def update_points(self):
         self.predictions.update_points(self.gameweek.mini_league.score_structure)
@@ -627,9 +632,10 @@ class PlayerGameweek(models.Model):
         except IndexError:
             return None
 
-    @property
+    '''@property
     def valid(self):
+        # TODO Also check balance and invalidate if in arrears
         if self.predictions.all().count() > 0:
             return True
         else:
-            return False
+            return False'''

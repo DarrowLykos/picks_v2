@@ -2694,3 +2694,24 @@ margin: -10px 0px 0px -180px;
   background-size: cover;
   background-repeat: no-repeat;
 }
+
+thead th {
+    border-bottom: 1px solid #DA4453 !important;
+    text-transform: uppercase
+}
+
+tbody th {
+    border: none;
+}
+
+tbody td {
+    border: none;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th,
+.table-hover tbody tr:hover td a,
+.table-hover tbody tr:hover th a {
+  background-color: #DA4453;
+  color: #F2F2F2;
+}

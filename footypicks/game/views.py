@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, F
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
-from .forms import DummyPredictionForm, JoinLeagueForm, PlayerDetailsForm
+from .forms import DummyPredictionForm, JoinLeagueForm, PlayerDetailsForm, MiniLeagueEditForm, GameweekCreateForm
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -85,7 +85,10 @@ class MiniLeagueDetail(DetailView):
             current_player = self.request.user.player
             context['player_is_owner'] = self.object.player_is_owner(current_player.id)
             context['player_is_member'] = self.object.player_is_owner(current_player.id)
-        context['primary_leaderboard'] = self.object.leaderboards.get(primary_ag=True).leaderboard()
+        try:
+            context['primary_leaderboard'] = self.object.leaderboards.get(primary_ag=True).leaderboard()
+        except:
+            pass
         return context
 
 
@@ -162,11 +165,24 @@ class MiniLeagueInvite(TemplateView):
 
 class MiniLeagueEdit(UpdateTemplate):
     model = MiniLeague
+    form_class = MiniLeagueEditForm
+    fields = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Edit League'
         context['subtitle'] = self.object.name
+
+        # Generates tables of score structures for easy reference
+        context['additional_html'] = "<h3>Score Structures</h3>"
+        context['additional_html'] += "<div class='row'>"
+        for s in Score.objects.all():
+            context['additional_html'] += f"<div class'col-auto'><h4>{s.name}</h4><table>"
+
+            for k, v in s.get_fields():
+                context['additional_html'] += f"<tr><th>{k.replace('_', ' ').upper()}</th><td>{v}</td></tr>"
+            context['additional_html'] += "</table></div>"
+        context['additional_html'] += "</div>"
         return context
 
 '''
@@ -225,13 +241,32 @@ class GameweekList(ListView):
         return qs
 
 
-class GameweekCreate(CreateTemplate):
+class GameweekCreate(LoginRequiredMixin, UserPassesTestMixin, CreateTemplate):
     model = Gameweek
+    form_class = GameweekCreateForm
+    fields = None
+
+    def test_func(self):
+        minileague = self.request.GET.get('minileague', None)
+        if minileague:
+            return MiniLeague.objects.get(pk=minileague).player_is_owner(self.request.user.player.id)
+        else:
+            return True
+
+    def get_success_url(self):
+        return reverse('game:game_edit', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create Game'
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super(GameweekCreate, self).get_form_kwargs()
+        kwargs.update({'player': self.request.user.player})
+        print(self.request.GET.get('minileague', None))
+        kwargs.update({'minileague': self.request.GET.get('minileague', None)})
+        return kwargs
 
 
 class GameweekEdit(UpdateTemplate):
@@ -312,8 +347,9 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         obj = self.model.objects.get(pk=kwargs['pk']).mini_league
-        print(obj)
-        print(obj.player_is_member(request.user.player.id))
+
+        # Check players balance and warn if in arrears
+        # TODO checkthis actually works!
         if not obj.player_is_member(request.user.player.id):
             messages.warning(self.request, "Only League Members can make predictions")
             return redirect('game:game_detail', kwargs['pk'])
@@ -419,6 +455,7 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_player = self.request.user.player
+        # TODO stop making PGs or figure out how to discount empty ones
         player_gameweek = PlayerGameweek.objects.get_or_create(player=current_player, gameweek=self.object)[0]
         #existing_picks = player_gameweek.get_predictions()  # All predictions for the current gameweek/player
         existing_picks = player_gameweek.predictions.all()
@@ -451,7 +488,9 @@ class PlayerDetail(DetailView):
 
         context['cleared_transactions'] = self.object.transaction_balances(pending=False)
         context['pending_transactions'] = self.object.transaction_balances(pending=True)
-        context['all_transactions'] = self.object.all_transactions()[5][:10]
+        all_transactions = self.object.all_transactions()
+        context['all_transactions'] = all_transactions[5][:10]
+        context['balances'] = all_transactions
         print("P", self.object.all_transactions()[:10])
         context['leagues'] = self.object.minileague_set.all()
         return context
@@ -538,6 +577,11 @@ class PlayerTransactionList(LoginRequiredMixin, ListView):
         qs = super(PlayerTransactionList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(player=player)
         print(qs)
-        return qs
+        return qs.order_by('-date')
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        player = self.request.user.player
+        all_transactions = player.all_transactions()
+        context['balances'] = all_transactions
+        return context

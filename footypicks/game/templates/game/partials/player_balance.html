@@ -7,20 +7,20 @@
     </thead>
     <tr>
         <th>Pending</th>
-        <td class="text-center">&pound;{{ pending_transactions.2|floatformat:2  }}</td>
-        <td class="text-center">&pound;{{ pending_transactions.3|floatformat:2  }}</td>
-        <td class="text-center">&pound;{{ pending_transactions.1|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ pending_transactions.2|floatformat:2 }}</td>
+        <td class="text-center">&pound;{{ pending_transactions.3|floatformat:2 }}</td>
+        <td class="text-center">&pound;{{ pending_transactions.1|floatformat:2 }}</td>
     </tr>
     <tr>
         <th>Cleared</th>
-        <td class="text-center">&pound;{{ cleared_transactions.2|floatformat:2  }}</td>
-        <td class="text-center">&pound;{{ cleared_transactions.3|floatformat:2  }}</td>
-        <td class="text-center">&pound;{{ cleared_transactions.1|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ cleared_transactions.2|floatformat:2 }}</td>
+        <td class="text-center">&pound;{{ cleared_transactions.3|floatformat:2 }}</td>
+        <td class="text-center">&pound;{{ cleared_transactions.1|floatformat:2 }}</td>
     </tr>
     <tr>
         <th>TOTAL</th>
-        <td class="text-center">&pound;{{ all_transactions.3|floatformat:2  }}</td>
-        <td class="text-center">&pound;{{ all_transactions.4|floatformat:2  }}</td>
-        <td class="text-center" class="border-2">&pound;{{ all_transactions.2|floatformat:2  }}</td>
+        <td class="text-center">&pound;{{ balances.3|floatformat:2 }}</td>
+        <td class="text-center">&pound;{{ balances.4|floatformat:2 }}</td>
+        <td class="text-center" class="border-2">&pound;{{ balances.2|floatformat:2 }}</td>
     </tr>
 </table>

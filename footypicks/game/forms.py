@@ -1,5 +1,8 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from .models import MiniLeague, Gameweek
+from players.models import Player
+from django.forms.widgets import NumberInput
 
 class ImagePreviewWidget(forms.widgets.FileInput):
     def render(self, name, value, attrs=None, **kwargs):
@@ -32,12 +35,52 @@ class PlayerDetailsForm(forms.Form):
                                    required=False)
 
 
+class MiniLeagueEditForm(forms.ModelForm):
 
-class LeagueForm(forms.Form):
-    pass
+    class Meta:
+        model = MiniLeague
+        fields = ['name', 'password', 'status', 'score_structure', 'gameweek_fee', ]
 
-class GameweekForm(forms.Form):
-    pass
+
+class GameweekCreateForm(forms.ModelForm):
+    start_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(widget=NumberInput(attrs={'type': 'date'}))
+    mini_league = forms.ModelChoiceField(
+        queryset=MiniLeague.objects.all(),
+
+    )
+    created_by = forms.ModelChoiceField(
+        queryset=Player.objects.all(),
+        disabled=True,
+        widget=forms.HiddenInput(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.player = kwargs.pop('player', None)
+        minileague = kwargs.pop('minileague', None)
+        print(minileague)
+        super(GameweekCreateForm, self).__init__(*args, **kwargs)
+        self.fields['created_by'].initial = self.player
+        if minileague:
+            self.fields['mini_league'].initial = MiniLeague.objects.get(pk=minileague)
+            self.fields['mini_league'].disabled = True
+        ended = ["E", "D",]
+        self.fields['mini_league'].queryset = MiniLeague.objects.filter(owner=self.player).exclude(status__in=ended)
+
+
+
+
+
+    class Meta:
+        model = Gameweek
+        fields = ['name', 'start_date', 'end_date', 'split_of_gameweek_fee', 'prize_split', 'mini_league', 'created_by', ]
+
+
+class GameweekEditForm(GameweekCreateForm):
+
+    class Meta:
+        model = Gameweek
+        fields = ['name', 'start_date', 'end_date', 'split_of_gameweek_fee', 'prize_split', ]
 
 class GameweekLeaderboardForm(forms.Form):
     pass

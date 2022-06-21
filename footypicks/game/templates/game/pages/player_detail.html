@@ -43,7 +43,7 @@
                     </tr>
                     <tr>
                         <th>Prizes</th>
-                        <td>£{{ player.prize_transactions.1|default_if_none:0 }}</td>
+                        <td>&pound;{{ player.prize_transactions.1|default_if_none:0 }}</td>
                     </tr>
                     <tr>
                         <th>Games won</th>
@@ -76,7 +76,7 @@
                 <h5>Recent Transaction History</h5>
                 {% if request.user.player == player %}
                 {% include 'game/partials/transaction_list.html' with transactions=all_transactions %}
-                <a class="btn btn-default read-more mb-1" href="#">More Transactions</a>
+                <a class="btn btn-default btn-sm mb-1" href="{% url 'game:player_transactions' %}">More Transactions</a>
                 {% else %}
                 <p>Restricted view</p>
                 {% endif %}

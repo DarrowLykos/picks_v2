@@ -5,25 +5,25 @@
 
 <div class="container-fluid main-content-area" xmlns="http://www.w3.org/1999/html">
     <div class="row m-1">
-
-        <div class="col-auto">
-            <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="button btn-default read-more">Back to League</a>
+        <div class="btn-group">
+            <div class="col-auto">
+                <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="button btn-default read-more">Back to League</a>
+            </div>
+            {% if can_predict %}
+            <div class="col-auto">
+                <a href="{% url 'game:game_predict' pk=game.pk %}" class="button btn-default read-more">Predict</a>
+            </div>
+            {% endif %}
+            {% if player_is_owner %}
+            <div class="col-auto">
+                <a href="{% url 'game:game_edit' pk=game.pk %}" class="button btn-default read-more">Edit Game</a>
+            </div>
+            {% endif %}
         </div>
-        {% if can_predict %}
-        <div class="col-auto">
-            <a href="{% url 'game:game_predict' pk=game.pk %}" class="button btn-default read-more">Predict</a>
-        </div>
-        {% endif %}
-        {% if player_is_owner %}
-        <div class="col-auto">
-            <a href="{% url 'game:game_edit' pk=game.pk %}" class="button btn-default read-more">Edit Game</a>
-        </div>
-        {% endif %}
-
     </div>
     <div class="row m-1">
         <div class="col post-title-content">
-                <h1 class="entry-title">{{ game.mini_league.name }}</h1>
+            <h1 class="entry-title">{{ game.mini_league.name }}</h1>
         </div>
     </div>
     {% include 'game/partials/messages.html' %}
@@ -39,18 +39,16 @@
         <div class="col-lg-10 col-sm">
             <div class="row post-inner-content">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-6">
                         <h2 class="alignleft">{{ game }}</h2>
                     </div>
-                    <div class="col ">
+                    <div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col">
+                    <div class="col-6">
                         <h5 class="alignleft">{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
                     </div>
-                    <div class="col ">
+                    <div class="col-6">
                         <h5 class="alignright">Last update: {{ game.last_update }}</h5>
                     </div>
                 </div>

@@ -3,7 +3,6 @@
     <th>Type</th>
     <th>Date</th>
     <th>Amount</th>
-    <th>Pending</th>
     <th>Cleared</th>
     </thead>
     {% for tran in transactions %}
@@ -11,8 +10,13 @@
         <td>{{ tran.get_type_display }}</td>
         <td>{{ tran.date|date:"d/m/Y" }}</td>
         <td>&pound;{{ tran.amount|floatformat:2  }}</td>
-        <td>{{ tran.pending }}</td>
-        <td>{{ tran.confirmed_date|date:"d/m/Y" }}</td>
+        <td>
+            {% if tran.pending %}
+            ...Pending...
+            {% else %}
+            {{ tran.confirmed_date|date:"d/m/Y" }}
+            {% endif %}
+        </td>
     </tr>
     {% endfor %}
 </table>

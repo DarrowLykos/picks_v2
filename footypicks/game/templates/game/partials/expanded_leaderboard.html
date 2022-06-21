@@ -1,25 +1,25 @@
 {% load humanize %}
-<table class="table table-sm small table-hover border w-100">
+<table class="table table-sm small table-hover w-100">
     <thead>
     <tr>
         <th style="width:5%;">Position</th>
         <th>Player</th>
-        <th>Gameweeks</th>
-        <th>Average</th>
-        <th>Max</th>
-        <th>Min</th>
-        <th>Points</th>
+        <th class="text-center">Gameweeks</th>
+        <th class="text-center">Average</th>
+        <th class="text-center">Max</th>
+        <th class="text-center">Min</th>
+        <th class="text-center">Points</th>
     </tr>
     </thead>
     {% for plr in leaderboard %}
     <tr>
         <td>{{ forloop.counter|ordinal }}</td>
         <td>{{ plr.name }}</td>
-        <td>{{ plr.count_gameweeks }}</td>
-        <td>{{ plr.avg_points|floatformat:2 }}</td>
-        <td>{{ plr.max_points }}</td>
-        <td>{{ plr.min_points }}</td>
-        <td>{{ plr.sum_points }}</td>
+        <td class="text-center">{{ plr.count_gameweeks }}</td>
+        <td class="text-center">{{ plr.avg_points|floatformat:2 }}</td>
+        <td class="text-center">{{ plr.max_points }}</td>
+        <td class="text-center">{{ plr.min_points }}</td>
+        <td class="text-center">{{ plr.sum_points }}</td>
     </tr>
     {% endfor %}
 </table>

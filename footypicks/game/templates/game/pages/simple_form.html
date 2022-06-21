@@ -12,9 +12,13 @@
     {% include 'game/partials/messages.html' %}
     <div class="row m-1 post-inner-content">
         <h2>{{ subtitle }}</h2>
+        <div id="grad-thin"></div>
         {% include 'game/partials/simple_form.html' %}
-    </div>
+        <div id="grad-thin"></div>
 
+        {{ additional_html|safe }}
+
+    </div>
 </div>
 
 {% endblock %}

@@ -23,7 +23,7 @@ class Player(models.Model):
         all = self.transaction_set.all().order_by('-date')
         # out = self.transaction_set.outgoings().order_by('-date')
         # inc = self.transaction_set.incomings().order_by('-date')
-        out = all.filter(type="O") | all.filter(type="TT")
+        out = all.filter(type="O") | all.filter(type="TT") | all.filter(type="F")
         inc = all.filter(type="I") | all.filter(type="TF") | all.filter(type="P")
         out_total = out.aggregate(total_amount=Sum('amount'))['total_amount']
         inc_total = inc.aggregate(total_amount=Sum('amount'))['total_amount']
@@ -36,7 +36,7 @@ class Player(models.Model):
 
     def transaction_balances(self, pending):
         all = self.transaction_set.all().order_by('-date')
-        outg = all.filter(type="O") | all.filter(type="TT")
+        outg = all.filter(type="O") | all.filter(type="TT") | all.filter(type="F")
         inc = all.filter(type="I") | all.filter(type="TF") | all.filter(type="P")
         # outg = self.transaction_set.outgoings().order_by('-date')
         out_total = outg.filter(pending=pending).aggregate(total_amount=Sum('amount'))['total_amount']
@@ -79,7 +79,7 @@ class Trophy(models.Model):
 
 class TransactionManager(models.Manager):
     def outgoings(self):
-        qs = super().get_queryset().filter(type="O") | super().get_queryset().filter(type="TT")
+        qs = super().get_queryset().filter(type="O") | super().get_queryset().filter(type="TT") | super().get_queryset().filter(type="F")
         return qs
 
     def incomings(self):
@@ -94,6 +94,7 @@ class Transaction(models.Model):
         ("TT", "Transfer to another player"),
         ("TF", "Transfer from another player"),
         ("P", "Prize income"),
+        ("F", "Game Fee"),
         ("X", "Other"),
     )
 
