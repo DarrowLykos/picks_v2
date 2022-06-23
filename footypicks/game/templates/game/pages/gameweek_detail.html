@@ -46,7 +46,7 @@
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
                     </div>
                     <div class="col-6">
-                        <h5 class="alignleft">{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
+                        <h5 class="alignleft"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
                     </div>
                     <div class="col-6">
                         <h5 class="alignright">Last update: {{ game.last_update }}</h5>

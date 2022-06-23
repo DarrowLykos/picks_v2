@@ -41,23 +41,35 @@
                     </thead>
                     <tbody>
                         {% for pick in existing_picks %}
-                        <tr class="border-top-0 border-bottom">
-                            <td class="text-center" colspan="3">{{ pick.fixture.fixture }}</td>
+                        <tr class="">
+                            <td class="text-end">
+                                {% if pick.fixture.home_team.thumbnail %}
+                                <img src="{{ pick.fixture.home_team.thumbnail.url }}" width="30px">
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {{ pick.fixture.fixture }}
+                            </td>
+                            <td class="text-left">
+                                {% if pick.fixture.away_team.thumbnail %}
+                                <img src="{{ pick.fixture.away_team.thumbnail.url }}" width="30px">
+                                {% endif %}
+                            </td>
                             <td class="text-center">{{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}</td>
                         </tr>
-                        <tr class="border-top border-bottom-0">
+                        <tr class="">
                             {% if pick.locked or pick.fixture.status != "Upcoming" %}
-                            <td class="text-center" colspan="3">{{ pick.pick_as_string }}</td>
+                            <td class="text-center border-bottom" colspan="3">{{ pick.pick_as_string }}</td>
                             {% else %}
-                            <td class="text-center">
+                            <td class="text-end border-bottom">
                                 <input class="text-center" type="text" value="{{ pick.home_score }}" id="exist_home_{{ pick.id }}" name="exist_home_{{ pick.id }}">
                             </td>
-                            <td class="text-center">-</td>
-                            <td class="text-center">
+                            <td class="text-center border-bottom">-</td>
+                            <td class="text-start border-bottom">
                                 <input class="text-center" type="text" value="{{ pick.away_score }}" id="exist_away_{{ pick.id }}" name="exist_away_{{ pick.id }}">
                             </td>
                             {% endif %}
-                            <td class="text-center">
+                            <td class="text-center border-bottom">
                                 {% if not pick.valid %}
                                 <i class="fa-solid fa-ban"></i>
                                 {% elif pick.locked or pick.fixture.status != "Upcoming" %}
@@ -70,21 +82,31 @@
                         {% endfor %}
                         {% if new_fixtures %}
                         {% for fix in new_fixtures %}
-                        <tr class="border-top-0 border-bottom">
-                            <td class="text-center" colspan="3">
+                        <tr class="">
+                            <td class="text-end">
+                                {% if fix.home_team.thumbnail %}
+                                <img src="{{ fix.home_team.thumbnail.url }}" width="30px">
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
                                 {{ fix.fixture }}
+                            </td>
+                            <td class="text-left">
+                                {% if fix.away_team.thumbnail %}
+                                <img src="{{ fix.away_team.thumbnail.url }}" width="30px">
+                                {% endif %}
                             </td>
                             <td class="text-center">{{ fix.competition.short_name }} | {{ fix.kick_off }}</td>
                         </tr>
-                        <tr class="border-top border-bottom-0">
+                        <tr class="">
                             {% if fix.status == "Upcoming" %}
-                            <td class="text-center"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
-                            <td class="text-center">-</td>
-                            <td class="text-center"><input class="text-center" type="text" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}"></td>
-                            <td class="text-center"><i class="fa-solid fa-pen-to-square"></i></td>
+                            <td class="text-center border-bottom"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
+                            <td class="text-center border-bottom">-</td>
+                            <td class="text-center border-bottom"><input class="text-center" type="text" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}"></td>
+                            <td class="text-center border-bottom"><i class="fa-solid fa-pen-to-square"></i></td>
                             {% elif fix.status != "Upcoming" %}
-                            <td class="text-center" colspan="3"><span class="text-bold">Missed Kick Off</span></td>
-                            <td class="text-center"><i class="fa-solid fa-lock"></i></td>
+                            <td class="text-center border-bottom" colspan="3"><span class="text-bold">Missed Kick Off</span></td>
+                            <td class="text-center border-bottom"><i class="fa-solid fa-lock"></i></td>
                             {% endif %}
                         </tr>
                         {% endfor %}
@@ -94,14 +116,14 @@
                     </tbody>
                 </table>
                 <label for="joker_select">Joker Fixture</label>
-                <select class="form-control" id="joker_select" name="joker_select">
+                <select class="form-control form-select-sm" id="joker_select" name="joker_select">
                     {% if joker.locked %}
                     <option selected id="joker_{{ joker.fixture.id }}">{{ joker.fixture.fixture }}</option>
                     {% else %}
                     <option disabled>Select Joker Fixture...</option>
                     {% for fix in all_fixtures %}
                     <option name="joker_{{ fix.id }}" id="joker_{{ fix.id }}"
-                    {% if fix == joker %}
+                    {% if fix.fixture == joker.fixture.fixture %}
                     selected>
                     {% elif fix.status != "Upcoming" %}
                     disabled> (Kicked off)

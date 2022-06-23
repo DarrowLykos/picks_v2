@@ -1,6 +1,6 @@
 {% for message in messages %}
-<div class="alert {{ message.tags }} alert-dismissible" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<div class="alert {{ message.tags }} alert-dismissible m-0" role="alert">
+    <button type="button" class="close button-circle" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
     {{ message|safe }}

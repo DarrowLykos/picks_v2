@@ -14,10 +14,10 @@
                 <a href="{% url 'game:minileague_edit' pk=league.pk %}" class="button btn-default read-more">Edit Mini-League</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:leaderboard_create' %}" class="button btn-default read-more">New Leaderboard</a>
+                <a href="{% url 'game:leaderboard_create' %}?minileague={{ league.id }}" class="button btn-default read-more">New Leaderboard</a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:game_create'%}?minileague=1" class="button btn-default read-more">New Game</a>
+                <a href="{% url 'game:game_create'%}?minileague={{ league.id }}" class="button btn-default read-more">New Game</a>
             </div>
         </div>
         {% endif %}

@@ -13,7 +13,11 @@
     </thead>
     {% for plr in leaderboard %}
     <tr>
+        {% if forloop.first %}
+        <td><i class="fa-solid fa-trophy gold"></i></td>
+        {% else %}
         <td>{{ forloop.counter|ordinal }}</td>
+        {% endif %}
         <td>{{ plr.name }}</td>
         <td class="text-center">{{ plr.count_gameweeks }}</td>
         <td class="text-center">{{ plr.avg_points|floatformat:2 }}</td>

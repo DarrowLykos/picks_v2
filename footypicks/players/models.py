@@ -69,10 +69,15 @@ class Trophy(models.Model):
         ("MON", "Highest Earner"),
     )
 
+
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     type = models.CharField(max_length=3, choices=TROPHY_TYPES)
     description = models.CharField(max_length=30, null=True, blank=True)
     date = models.DateTimeField()
+
+    class Meta:
+        verbose_name = "Trophy"
+        verbose_name_plural = "Trophies"
 
     def __str__(self):
         return f"{self.player} | {self.get_type_display()} | {self.description}"
@@ -104,6 +109,7 @@ class Transaction(models.Model):
     pending = models.BooleanField(default=True)
     date = models.DateTimeField(auto_now_add=True)
     confirmed_date = models.DateTimeField(null=True, blank=True)
+    note = models.CharField(max_length=100, null=True, blank=True)
     objects = TransactionManager()
 
     def __str__(self):

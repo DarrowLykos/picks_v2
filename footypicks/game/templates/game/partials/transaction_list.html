@@ -4,6 +4,7 @@
     <th>Date</th>
     <th>Amount</th>
     <th>Cleared</th>
+    <th>Note</th>
     </thead>
     {% for tran in transactions %}
     <tr>
@@ -17,6 +18,7 @@
             {{ tran.confirmed_date|date:"d/m/Y" }}
             {% endif %}
         </td>
+        <td>{{ tran.note|default_if_none:"" }}</td>
     </tr>
     {% endfor %}
 </table>

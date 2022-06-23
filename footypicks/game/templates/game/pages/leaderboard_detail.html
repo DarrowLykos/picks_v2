@@ -12,7 +12,7 @@
             </div>
             {% if player_is_owner %}
             <div class="col-auto">
-                <a href="{% url 'game:leaderboard_edit' pk=leaderboard.pk %}" class="button btn-default read-more">Edit Leaderboard</a>
+                <a href="{% url 'game:leaderboard_edit' pk=game.pk %}" class="button btn-default read-more">Edit Leaderboard</a>
             </div>
             {% endif %}
         </div>
@@ -35,19 +35,17 @@
         <div class="col-lg-10 col-sm">
             <div class="row post-inner-content">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-6">
                         <h2 class="alignleft">{{ game.name }}</h2>
                     </div>
-                    <div class="col ">
+                    <div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <h5 class="alignleft">{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
-                        </div>
-                        <div class="col ">
-                            <h5 class="alignright">Last update: {{ game.last_update }}</h5>
-                        </div>
+                    <div class="col-6">
+                        <h5 class="alignleft"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
+                    </div>
+                    <div class="col-6">
+                        <h5 class="alignright">Last update: {{ game.last_update }}</h5>
                     </div>
                     <div id="grad-thin"></div>
                 </div>

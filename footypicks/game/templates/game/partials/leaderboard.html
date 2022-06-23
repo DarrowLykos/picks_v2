@@ -9,7 +9,11 @@
     </thead>
     {% for player in game.leaderboard %}
     <tr>
+        {% if forloop.first %}
+        <td><i class="fa-solid fa-trophy gold"></i></td>
+        {% else %}
         <td>{{ forloop.counter|ordinal }}</td>
+        {% endif %}
         <td class="font-weight-bold"><a href="{% url 'game:game_detail' pk=game.pk %}?player={{ player.player.id }}">{{ player.player }}</a></td>
         <td class="text-center">{{ player.points }}</td>
     </tr>

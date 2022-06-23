@@ -894,6 +894,10 @@ button, .button {
     transition: background-color 0.3s linear;
 }
 
+.button-circle {
+    border-radius: 15px !important;
+}
+
 button:hover,
 button:focus,
 .button:hover,

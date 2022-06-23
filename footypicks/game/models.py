@@ -9,6 +9,41 @@ import pytz
 from django.db.models import F
 from .sportsDB import GetRoundEvents
 
+
+
+# MODEL DESCRIPTIONS
+'''
+SCORE:          Model for applying a scoring structure to a game. Also calcs points for accurate predictions. The model 
+                has functions that take a player's prediction and the actual result and returns an integer value 
+                representing the points awarded for the prediction.
+COMPETITION:    Real football league data. E.g. Premier League, Championship, FA Cup, etc. 
+                Data provided by https://www.thesportsdb.com/ API. 
+TEAM:           Real football team data. E.g. Manchester United, Arsenal, etc
+                Data provided by https://www.thesportsdb.com/ API.
+FIXTURE:        Real football fixture data. E.g. Manchester United vs Arsenal.
+                Data provided by https://www.thesportsdb.com/ API.
+MINILEAGUE:     The top level of the Footy Picks game. Players join a MiniLeague to participate in Gameweeks for that 
+                League. Their performance is aggregated in the AggregatedGame leaderboards.
+                Also referred to as Mini-League or League.
+GAMEWEEK:       The crux of the game. Players participate in multiple Gameweeks within a Mini-League to score points. 
+                A gameweek will consist of multiple Fixtures for players to make their predictions on.
+                Also referred to as Game.
+AGGREGATEDGAME: A variation on the Gameweek model. This model aggregates multiple Gameweeks into a leaderboard. 
+                The primary difference between the two is that an AG doesn't have child predictions/fixtures, it has 
+                child Gameweeks.
+                Also referred to as an AG or Leaderboard.
+PREDICTION:     A players prediction on a specific fixture. The Prediction is linked to a Gameweek, Player and Fixture.
+                Also referred to as Pick.
+PLAYERAGGREGA
+TEDGAME:        A relationship model for Player and AggregatedGame. The purpose of the which is to aggregate all the 
+                player's predictions for an AggregatedGame because a Prediction on its own has no relationship to an
+                AggregatedGame.
+PLAYERGAMEWEEK: A relationship model for Player and Gameweek. The purpose of the which is to aggregate all the 
+                player's predictions for a Gameweek because a Prediction on its own has no relationship to a Gameweek.  
+'''
+
+
+# Statuses for Mini Leagues, Games and AggregatedGames.
 GAME_STATUS = (
         ("L", "Live"),
         ("E", "Ended"),
@@ -16,6 +51,7 @@ GAME_STATUS = (
         ("U", "Upcoming"),
     )
 
+# Prize split breakdown options for Games and AggregatedGames
 PRIZE_SPLIT_LIST = (
     ("1", "100% to 1st place"),
     ("2", "60/40 to 1st and 2nd"),
@@ -24,6 +60,9 @@ PRIZE_SPLIT_LIST = (
 )
 
 
+# Function to convert the options from the PRIZE_SPLIT_LIST into a table of decimal values. The table is then
+# used to calculate the prize split per player.
+# TODO add complexity of tied positions sharing multiple prizes at a different split
 def prize_split_table(prize_split):
     prize_split = int(prize_split)
     if prize_split == 1:
@@ -117,7 +156,7 @@ class Score(models.Model):
         print("POINTS: ", points)
         return points
 
-# Real world football data
+# REAL WORLD FOOTBALL DATA
 class Competition(models.Model):
     # A football competition such as the Premier League or FA Cup
     sportsdb_id = models.CharField(verbose_name="SportsDb ID", max_length=20, null=True, blank=True)
@@ -280,7 +319,7 @@ class MiniLeague(models.Model):
         verbose_name = "Mini League"
 
     def player_is_member(self, player_id):
-        if self.players.filter(pk=player_id).count() == 1:
+        if self.players.filter(pk=player_id).exists():
             return True
 
     def player_is_owner(self, player_id):
@@ -306,8 +345,8 @@ class Gameweek(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    created_by = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL)
-    mini_league = models.ForeignKey(MiniLeague, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(Player, on_delete=models.CASCADE)
+    mini_league = models.ForeignKey(MiniLeague, on_delete=models.CASCADE)
     fixtures = models.ManyToManyField(Fixture, blank=True, )
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     # fee = models.DecimalField(max_digits=10, decimal_places=2)  # Moved to MiniLeague
@@ -407,7 +446,7 @@ class AggregatedGame(models.Model):
     name = models.CharField(max_length=25)
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     gameweeks = models.ManyToManyField(Gameweek, related_name="leaderboards")
-    mini_league = models.ForeignKey(MiniLeague, on_delete=models.SET_NULL, null=True, related_name="leaderboards")
+    mini_league = models.ForeignKey(MiniLeague, on_delete=models.CASCADE, related_name="leaderboards")
     primary_ag = models.BooleanField(verbose_name="Primary Mini-League Leaderboard", default=False) #  determines if this is the primary AG for the mini-league
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     last_update = models.DateTimeField(auto_now=True)
@@ -530,12 +569,13 @@ class Prediction(models.Model):
         return f"{self.home_score}-{self.away_score}"
 
     def update_points(self, score):
+        if not self.valid:
+            return 0
         points = score.calculate_points(self.pick_as_string(), self.fixture.final_score, self.joker)
         if points != self.points:
             self.points = points
             self.save()
-        print("Updated Points", self, self.points)
-
+            print("Updated Points", self, self.points)
         return points
 
 
@@ -544,12 +584,16 @@ class Prediction(models.Model):
         pass
 
     def validate_pick(self):
+        # Check the pick is valid for different reasons.
         print(self.fixture.kick_off(False), self.last_changed)
+        # Prediction was submitted after kick off = Invalid
         if self.fixture.kick_off(False) < self.last_changed:
             self.valid = False
             self.locked = True
             self.save()
             return False
+
+        # Prediction was submitted before kick off = Valid
         elif self.fixture.kick_off(False) > self.last_changed:
             self.valid = True
             self.save()
@@ -585,6 +629,7 @@ class PlayerGameweekManager(models.Manager):
 
 
 class PlayerGameweek(models.Model):
+    # TODO: Check player balance, deduct fee, create transaction and validate
     player = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL)
     gameweek = models.ForeignKey(Gameweek, null=True, on_delete=models.SET_NULL)
     predictions = models.ManyToManyField(Prediction, blank=True, null=True)
@@ -602,8 +647,11 @@ class PlayerGameweek(models.Model):
         verbose_name_plural = "Players/Gameweeks"
 
     def save(self, *args, **kwargs):
-        if self.predictions.all().count() > 0:
-            self.valid = True
+        try:
+            if self.predictions.all().count() > 0:
+                self.valid = True
+        except ValueError:
+            self.valid = False
         super(PlayerGameweek, self).save(*args, **kwargs)
 
     def update_points(self):
@@ -623,6 +671,9 @@ class PlayerGameweek(models.Model):
     def get_fixtures(self):
         fixtures = self.gameweek.fixtures.all()
         return fixtures
+
+    def validate_predictions(self):
+        pass
 
 
     def get_joker(self):

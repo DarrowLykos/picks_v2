@@ -14,10 +14,7 @@
             <a href="{% url 'password_change' %}" class="button btn-default read-more">Change Password</a>
         </div>
         <div class="col-auto">
-            <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Make Payment</a>
-        </div>
-        <div class="col-auto">
-            <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Payout</a>
+            <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Send/Receive</a>
         </div>
         </div>
         {% endif %}
@@ -76,7 +73,7 @@
                 <h5>Recent Transaction History</h5>
                 {% if request.user.player == player %}
                 {% include 'game/partials/transaction_list.html' with transactions=all_transactions %}
-                <a class="btn btn-default btn-sm mb-1" href="{% url 'game:player_transactions' %}">More Transactions</a>
+                <a class="p-1" href="{% url 'game:player_transactions' %}">More Transactions</a>
                 {% else %}
                 <p>Restricted view</p>
                 {% endif %}
