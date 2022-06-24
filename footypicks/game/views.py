@@ -455,8 +455,9 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
     def get(self, request, *args, **kwargs):
         obj = self.model.objects.get(pk=kwargs['pk']).mini_league
 
-        # Check players balance and warn if in arrears
-        # TODO checkthis actually works!
+        # TODO Check players balance and warn if in arrears
+
+        # Only allows members of the league to predict
         if not obj.player_is_member(request.user.player.id):
             messages.warning(self.request, "Only League Members can make predictions")
             return redirect('game:game_detail', kwargs['pk'])
@@ -567,6 +568,8 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                     if fixture == joker:
                         new_pick.joker = True
                     # Saves the new record
+                    # TODO check again the player's balance and deduct fee. Picks stay invalid if insufficient funds
+
                     new_pick.last_changed = datetime.now()
                     new_pick.save()
                     player_gameweek.predictions.add(new_pick)

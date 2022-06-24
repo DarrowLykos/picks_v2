@@ -45,10 +45,11 @@ class GetRoundEvents:
             home_data = [str(event['idHomeTeam']), event['strHomeTeam']]
             away_data = [str(event['idAwayTeam']), event['strAwayTeam']]
             print(home_data, away_data)
-            event_id = event['idEvent']
+            event_id = str(event['idEvent'])
             event_status = event['strStatus']
             home_team = self.update_team(home_data)
             away_team = self.update_team(away_data)
+            print(event_id)
             fixture, created = Fixture.objects.get_or_create(sportsdb_id=event_id)
             if created:
                 fixture.home_team = home_team

@@ -2632,6 +2632,15 @@ i.dollar-green {
     color:#006700;
 }
 
+i.red {
+    color:#DA4453;
+}
+
+/* -------------------------------------------------------
+ * Additions that need organising
+ * -------------------------------------------------------
+*/
+
 
 /* Disables the dotted line underneath abbreviations */
 abbr[title] {
@@ -2644,11 +2653,6 @@ text-align-right {
 }
 
 hr.title-line {
-    color:#DA4453;
-}
-
-
-i.red {
     color:#DA4453;
 }
 
