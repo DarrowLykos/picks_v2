@@ -34,9 +34,9 @@
     </div>
     {% include 'game/partials/messages.html' %}
     <div class="row m-1">
-        <div class="col-lg-2 col-sm">
+        <div class="col-lg-2 col-sm col-md-4">
             <div class="row well">
-                <div class="col">
+                <div class="col-auto">
                     <h5>Entry Cost</h5>
                     <table class="table table-sm small">
                         <tr>
@@ -49,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-10 col-sm">
+        <div class="col-lg-10 col-sm col-md-8">
             <div class="row post-inner-content">
                 <div class="row">
                     <div class="col-12">
@@ -73,7 +73,7 @@
                     {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
                     <a href="{% url 'game:gameweek_list' pk=league.id %}" class="btn btn-default btn-sm">All Games</a>
                 </div>
-                <div class="col-lg-7 col-sm">
+                <div class="col-lg-7 col-sm p-1">
                     <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
                 </div>

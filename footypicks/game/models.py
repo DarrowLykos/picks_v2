@@ -225,6 +225,7 @@ class Fixture(models.Model):
     penalties = models.BooleanField(default=False)
     extra_time = models.BooleanField(default=False)
     postponed = models.BooleanField(default=False)
+    sportsdb_round = models.IntegerField(null=True, )
 
 
     def __str__(self):
