@@ -23,16 +23,20 @@ class Player(models.Model):
         all = self.transaction_set.all().order_by('-date')
         # out = self.transaction_set.outgoings().order_by('-date')
         # inc = self.transaction_set.incomings().order_by('-date')
-        out = all.filter(type="O") | all.filter(type="TT") | all.filter(type="F")
-        inc = all.filter(type="I") | all.filter(type="TF") | all.filter(type="P")
+        prizes = all.filter(type="P")
+        payments = all.filter(type="F")
+        out = all.filter(type="O") | all.filter(type="TT") | payments
+        inc = all.filter(type="I") | all.filter(type="TF") | prizes
         out_total = out.aggregate(total_amount=Sum('amount'))['total_amount']
         inc_total = inc.aggregate(total_amount=Sum('amount'))['total_amount']
+        prizes_total = prizes.aggregate(total_amount=Sum('amount'))['total_amount']
+        payments_total = payments.aggregate(total_amount=Sum('amount'))['total_amount']
         if not out:
             out_total = 0
         if not inc:
             inc_total = 0
         total = inc_total - out_total
-        return inc, out, total, inc_total, out_total, all
+        return inc, out, total, inc_total, out_total, all, prizes_total, payments_total
 
     def transaction_balances(self, pending):
         all = self.transaction_set.all().order_by('-date')
@@ -54,6 +58,11 @@ class Player(models.Model):
 
     def prize_transactions(self, league=None):
         trans = self.transaction_set.filter(type="P")
+        total = trans.aggregate(total=Sum('amount'))['total']
+        return trans, total
+
+    def fee_transactions(self, league=None):
+        trans = self.transaction_set.filter(type="F")
         total = trans.aggregate(total=Sum('amount'))['total']
         return trans, total
 

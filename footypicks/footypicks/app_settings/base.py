@@ -14,10 +14,10 @@ import os
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-# Quick-start development app_settings - unsuitable for production
+'''# Quick-start development app_settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -26,7 +26,7 @@ SECRET_KEY = '!+)p=ft^jr+$kni!c1w*9!xaj)*6)ir)4zh!(=b=8a8j!xf#b-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 'sjones187.ddns.net', ]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 'sjones187.ddns.net', ]'''
 
 
 # Application definition
@@ -150,9 +150,3 @@ LOGOUT_REDIRECT_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-# Email backend
-
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent-emails')
-
-# TODO actually set up email server

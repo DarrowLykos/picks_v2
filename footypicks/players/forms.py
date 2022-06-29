@@ -25,4 +25,4 @@ class TransactionCreateForm(forms.ModelForm):
         self.fields['type'].choices = (("I", "Incoming from player"),
                                        ("O", "Outgoing to player"),
                                        )
-        self.fields['amount'].help_text = ""
+        self.fields['amount'].help_text = "Your transaction will be pending until we confirm receipt/make a payment to you"

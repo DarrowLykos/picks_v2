@@ -1,21 +1,25 @@
 {% load my_filters %}
-<table class="table table-sm small table-hover">
+<table class="table table-sm small table-hover w-100">
     <thead>
     </thead>
     <tbody>
         {% if leaderboards %}
         {% for lb in leaderboards %}
         <tr>
-            <th style="width:70%;">
+            <th style="width:50%;">
                 {% if lb|get_class == 'Gameweek' %}
                 <!-- <abbr title="Submitted"><i class="fa-solid fa-circle-check"></i></abbr>
                 <abbr title="DNP"><i class="fa-solid fa-triangle-exclamation"></i></abbr> -->
-                <a href="{% url 'game:game_detail' lb.id %}">{{ lb.name }}</a>
+                <a href="{% url 'game:game_detail' lb.id %}">
+                    <abbr title="{{ lb.name }}">{{ lb.name|truncatechars:11 }}</abbr>
+                </a>
                 {% else %}
-                <a href="{% url 'game:leaderboard_detail' lb.id %}">{{ lb.name }}</a>
+                <a href="{% url 'game:leaderboard_detail' lb.id %}">
+                    <abbr title="{{ lb.name }}">{{ lb.name|truncatechars:11 }}</abbr>
+                </a>
                 {% endif %}
             </th>
-            <td>{{ lb.get_status_display }}</td>
+            <td><i class="fa-solid fa-fw fa-calendar-days red"></i>{{ lb.start_date|date:"d/m/y" }} - {{ lb.end_date|date:"d/m/y" }}</td>
         </tr>
         {% endfor %}
         {% else %}

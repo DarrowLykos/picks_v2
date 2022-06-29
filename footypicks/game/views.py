@@ -3,8 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, F
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
-from .forms import DummyPredictionForm, JoinLeagueForm, PlayerDetailsForm, MiniLeagueEditForm, GameweekCreateForm, \
-    GameweekEditForm, LeaderboardCreateForm, LeaderboardEditForm
+from .forms import *
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -176,7 +175,7 @@ class MiniLeagueInvite(TemplateView):
         return redirect('game:minileague_detail', pk=league_id)
 
 
-class MiniLeagueEdit(UserPassesTestMixin, UpdateTemplate):
+class MiniLeagueEdit(LoginRequiredMixin, UserPassesTestMixin, UpdateTemplate):
     '''
     Simple form to edit some of the Mini League values
     '''
@@ -208,6 +207,10 @@ class MiniLeagueEdit(UserPassesTestMixin, UpdateTemplate):
         context['additional_html'] += "</div>"
         return context
 
+
+class MiniLeagueEnd(LoginRequiredMixin, UserPassesTestMixin, UpdateTemplate):
+    pass
+
 # Game Views
 class GameweekDetail(DetailView):
     '''
@@ -236,10 +239,11 @@ class GameweekDetail(DetailView):
         # Prize pool table
         context['prize_pool'] = self.object.prize_table()
         # Provide additional context if user is logged in
-        if self.request.user.is_authenticated and not any(ele in DEAD_STATUSES for ele in self.object.status):
+        if self.request.user.is_authenticated:
             current_player = self.request.user.player
-            context['can_predict'] = self.object.check_player_is_member(current_player.id)
             context['player_is_owner'] = self.object.mini_league.player_is_owner(current_player.id)
+        if self.request.user.is_authenticated and not any(ele in DEAD_STATUSES for ele in self.object.status):
+            context['can_predict'] = self.object.check_player_is_member(current_player.id)
         # Tell page which player's predictions to display
         player_selected = self.request.GET.get("player", None)
         if player_selected:
@@ -354,11 +358,50 @@ class GameweekEdit(LoginRequiredMixin, UserPassesTestMixin, UpdateTemplate):
         form_cleaned = form.save()
         # Auto-adds the new Gameweek to the Primary AggregatedGame
         primary_ag = form_cleaned.mini_league.primary_leaderboard()
-        if primary_ag:
+        if primary_ag and not primary_ag.gameweeks.filter(pk=form_cleaned.id).exists():
             primary_ag.gameweeks.add(form_cleaned)
             messages.success(self.request, f"Game added to Primary Leaderboard: {primary_ag}")
         return super().form_valid(form)
 
+
+class GameweekEnd(GameweekEdit):
+    form_class = GameweekEndForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'End Game'
+        context['additional_html'] = "<table class='table table-sm table-hover w-50'><thead><th>Player</th><th>Points</th>"
+        for x in self.object.leaderboard():
+            context['additional_html'] += "<tr>"
+            context['additional_html'] += f"<td>{x.player}</td><td>{x.points}</td>"
+            context['additional_html'] += "</tr>"
+        context['additional_html'] += "</table>"
+        context['additional_html'] += f"<h5>Prize</h5>&pound;{self.object.prize_pool()}"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Game ended")
+        form_cleaned = form.save(commit=False)
+        winner = form_cleaned.winner
+        # create prize transaction for the winner
+        player_gameweek = PlayerGameweek.objects.get(player=winner, gameweek=self.object.id)
+        player_gameweek.prize = Transaction.objects.create(player=winner,
+                                              type="P",
+                                              amount=self.object.prize_pool(),
+                                              pending=False,
+                                              confirmed_date=datetime.now(),
+                                              note=f"{self.object.mini_league} | {self.object}",
+                                                           )
+        form_cleaned.status = "E"
+        form_cleaned.save()
+        return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        if any(ele in self.get_object().status for ele in DEAD_STATUSES):
+            messages.error(request, "Game already ended")
+            print(self.get_object().id)
+            return redirect(reverse('game:game_detail',  kwargs={'pk': self.get_object().id}))
+        return super().get(request, *args, **kwargs)
 
 # Gameweek Leaderboard / Aggregated Game Views
 class GameweekLeaderboardDetail(DetailView):
@@ -385,11 +428,20 @@ class GameweekLeaderboardDetail(DetailView):
         return context
 
 
-class GameweekLeaderboardCreate(CreateTemplate):
+class GameweekLeaderboardCreate(LoginRequiredMixin, UserPassesTestMixin, CreateTemplate):
     model = AggregatedGame
     form_class = LeaderboardCreateForm
     fields = None
 
+
+    def test_func(self):
+        # Only allow Mini League owner to add new Gameweek to the League
+        minileague = self.request.GET.get('minileague', None)
+        if minileague:
+            return MiniLeague.objects.get(pk=minileague).player_is_owner(self.request.user.player.id)
+        else:  # No ML provided
+            return True
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create Leaderboard'
@@ -397,15 +449,12 @@ class GameweekLeaderboardCreate(CreateTemplate):
 
     def form_valid(self, form):
         form = form.cleaned_data
-        print("F: ", form)
         primary_ag = form['primary_ag']
-        print(primary_ag)
         ml = form.mini_league
-        print(ml)
         if ml.leaderboards.filter(primary_ag=True) == 1:
             messages.error(self.request, "Mini League already has a primary Leaderboard. Please remove that first, then try again")
             return reverse('game:leaderboard_create', kwargs={'pk': self.object.id, 'initial': form})
-
+        # TODO double check split_of_gameweek_fee doesn't push us over the gameweek_fee for shared gameweeks
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -415,10 +464,18 @@ class GameweekLeaderboardCreate(CreateTemplate):
         return kwargs
 
 
-class GameweekLeaderboardEdit(UpdateTemplate):
+class GameweekLeaderboardEdit(LoginRequiredMixin, UserPassesTestMixin, UpdateTemplate):
     model = AggregatedGame
     form_class = LeaderboardEditForm
     fields = None
+
+    def test_func(self):
+        # Only the MiniLeague owner can edit the Gameweek
+        return self.get_object().created_by == self.request.user.player
+
+    def get_success_url(self):
+        # Redirect to the Gameweek detail page
+        return reverse('game:leaderboard_detail', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -437,6 +494,46 @@ class GameweekLeaderboardEdit(UpdateTemplate):
             #return reverse('game:leaderboard_edit', kwargs={'pk': form_cleaned.id})
         form_cleaned.save()
         return super().form_valid(form)
+
+
+class GameweekLeaderboardEnd(GameweekLeaderboardEdit):
+    form_class = LeaderboardEndForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'End Game'
+        context[
+            'additional_html'] = "<table class='table table-sm table-hover w-50'><thead><th>Player</th><th>Points</th>"
+        print(self.object.leaderboard())
+        for x in self.object.leaderboard():
+            context['additional_html'] += "<tr>"
+            context['additional_html'] += f"<td>{x['name']}</td><td>{x['sum_points']}</td>"
+            context['additional_html'] += "</tr>"
+        context['additional_html'] += "</table>"
+        context['additional_html'] += f"<h5>Prize</h5>&pound;{self.object.prize_pool()}"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Leaderboard ended")
+        form_cleaned = form.save(commit=False)
+        winner = form_cleaned.winner
+        # create prize transaction for the winner
+        transaction = Transaction.objects.get_or_create(player=winner,
+                                                        type="P",
+                                                        amount=self.object.prize_pool(),
+                                                        pending=False,
+                                                        confirmed_date=datetime.now(),
+                                                        note=self.object,
+                                                        )
+        form_cleaned.status = "E"
+        form_cleaned.save()
+        return super().form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        if any(ele in self.get_object().status for ele in DEAD_STATUSES):
+            messages.error(request, "Leaderboard already ended")
+            return redirect(reverse('game:leaderboard_detail',  kwargs={'pk': self.get_object().id}))
+        return super().get(request, *args, **kwargs)
 
 '''
 Prediction Views
@@ -567,9 +664,21 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                     # Updates the joker boolean if the pick was selected as a joker
                     if fixture == joker:
                         new_pick.joker = True
-                    # Saves the new record
-                    # TODO check again the player's balance and deduct fee. Picks stay invalid if insufficient funds
 
+                    # Creates a fee transaction if one hasn't been created yet.
+                    if not player_gameweek.payment:
+                        # TODO check again the player's balance. Picks stay invalid if insufficient funds
+                        fee = Transaction.objects.create(player=request.user.player,
+                                                         type="F",
+                                                         amount=player_gameweek.gameweek.mini_league.gameweek_fee,
+                                                         pending=False,
+                                                         confirmed_date=datetime.now(),
+                                                         note=player_gameweek.gameweek,
+                                                         )
+                        player_gameweek.payment = fee
+                        # Saves the player_gameweek record
+                        player_gameweek.save()
+                    # saves the pick record
                     new_pick.last_changed = datetime.now()
                     new_pick.save()
                     player_gameweek.predictions.add(new_pick)

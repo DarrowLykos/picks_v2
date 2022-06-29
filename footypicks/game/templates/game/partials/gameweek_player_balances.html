@@ -1,0 +1,29 @@
+<table class="table table-sm small table-hover w-100">
+    <thead>
+      <th>Player</th>
+      <th>In</th>
+      <th>Out</th>
+      <th>Fees</th>
+      <th>Prizes</th>
+      <th>Balance</th>
+    </thead>
+    <tbody>
+      {% for player in league.players.all %}
+      <tr>
+          <td><a href="{% url 'game:player_detail' pk=player.id %}">{{ player }}</a></td>
+            {% with player.all_transactions as trans %}
+            <td>&pound;{{ trans.3|default_if_none:"0" }}</td>
+            <td>&pound;{{ trans.4|default_if_none:"0" }}</td>
+            <td>&pound;{{ trans.7|default_if_none:"0" }}</td>
+            <td>&pound;{{ trans.6|default_if_none:"0" }}</td>
+            <td>
+                &pound;{{ trans.2|default_if_none:"0" }}
+                {% if trans.2 < 0 %}
+                !! IN ARREARS !!
+                {% endif %}
+            </td>
+            {% endwith %}
+      </tr>
+      {% endfor %}
+    </tbody>
+</table>

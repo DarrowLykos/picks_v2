@@ -120,7 +120,8 @@
                     {% if joker.locked %}
                     <option selected id="joker_{{ joker.fixture.id }}">{{ joker.fixture.fixture }}</option>
                     {% else %}
-                    <option disabled>Select Joker Fixture...</option>
+                    <option selected disabled>Select Joker Fixture...</option>
+                    {% endif %}
                     {% for fix in all_fixtures %}
                     <option name="joker_{{ fix.id }}" id="joker_{{ fix.id }}"
                     {% if fix.fixture == joker.fixture.fixture %}
@@ -132,7 +133,7 @@
                     {% endif %}
                     {{ fix.fixture }}</option>
                     {% endfor %}
-                    {% endif %}
+
                 </select>
                 {% if not game.status == "E" %}
                 <button class="btn btn-default btn-sm m-1" name="submit" type="submit">Submit</button>

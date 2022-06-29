@@ -2,4 +2,8 @@ footypicks/players/migrations
 footypicks/game/migrations
 footypicks/media/team-logos
 footypicks/media/player-pics
+footypicks/sent-emails
 Sample Styles
+footypicks/footypicks/app_settings/dev.py
+.env
+db.sqlite3

@@ -10,7 +10,15 @@
     <tr>
         <td>{{ tran.get_type_display }}</td>
         <td>{{ tran.date|date:"d/m/Y" }}</td>
-        <td>&pound;{{ tran.amount|floatformat:2  }}</td>
+        <td>
+            {% if tran.type == "TT" or tran.type == "O" or tran.type == "F" %}
+            <span style="color: #DA4453">-
+            {% endif %}
+            &pound;{{ tran.amount|floatformat:2  }}
+            {% if tran.type == "TT" or tran.type == "O" or tran.type == "F" %}
+            </span>
+            {% endif %}
+        </td>
         <td>
             {% if tran.pending %}
             ...Pending...

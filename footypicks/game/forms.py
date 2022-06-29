@@ -85,7 +85,6 @@ class GameweekCreateForm(forms.ModelForm):
         ended = ["E", "D", ]
         self.fields['mini_league'].queryset = MiniLeague.objects.filter(owner=self.player).exclude(status__in=ended)
 
-
     class Meta:
         model = Gameweek
         fields = ['name', 'mini_league', 'start_date', 'end_date', 'split_of_gameweek_fee', 'prize_split', 'created_by',
@@ -139,6 +138,37 @@ class GameweekEditForm(GameweekCreateForm):
         )'''
 
 
+class GameweekEndForm(GameweekEditForm):
+
+
+    def __init__(self, *args, **kwargs):
+        # Pop additional kwargs before the super function
+        self.player = kwargs.pop('player', None)
+        minileague = kwargs.pop('minileague', None)
+        super(GameweekEndForm, self).__init__(*args, **kwargs)
+        self.fields['name'].disabled = True
+        self.fields['mini_league'].disabled = True
+        self.fields['start_date'].disabled = True
+        self.fields['end_date'].disabled = True
+        self.fields['split_of_gameweek_fee'].disabled = True
+        self.fields['prize_split'].disabled = True
+        self.fields['fixtures'].disabled = True
+        self.fields['fixtures'].queryset = self.instance.fixtures
+        self.fields['winner'].initial = self.instance.leader().player.id
+        self.fields['winner'].queryset = self.instance.mini_league.players.all()
+        self.fields['winner'].required = True
+        self.fields['winner'].help_text = "Select outright winner of the game. For split pots, leave blank and manually" \
+                                          " create prize transactions in Admin"
+        print(self.instance.leader().player)
+
+
+    class Meta(GameweekEditForm.Meta):
+        fields = ['winner'] + GameweekEditForm.Meta.fields
+
+
+
+
+
 class LeaderboardCreateForm(forms.ModelForm):
 
     class Meta:
@@ -190,8 +220,8 @@ class LeaderboardEditForm(LeaderboardCreateForm):
         fields = ['name', 'mini_league', 'start_date', 'end_date', 'split_of_gameweek_fee', 'prize_split',
                   'created_by', 'gameweeks', 'primary_ag', ]
         widgets = {
-            'start_date': forms.SelectDateWidget(),
-            'end_date': forms.SelectDateWidget(),
+            'start_date': forms.DateInput(),
+            'end_date': forms.DateInput(),
             'primary_ag': forms.CheckboxInput(attrs={'style': 'width:20px;height:20px;'})
         }
 
@@ -220,3 +250,27 @@ class LeaderboardEditForm(LeaderboardCreateForm):
         self.fields['split_of_gameweek_fee'].widget.attrs['max'] = self.instance.mini_league.gameweek_fee
 
 
+class LeaderboardEndForm(LeaderboardEditForm):
+
+    class Meta(LeaderboardEditForm.Meta):
+        fields = ['winner'] + LeaderboardEditForm.Meta.fields
+        exclude = ['primary_ag', ]
+
+    def __init__(self, *args, **kwargs):
+        # Pop additional kwargs before the super function
+        self.player = kwargs.pop('player', None)
+        minileague = kwargs.pop('minileague', None)
+        super(LeaderboardEditForm, self).__init__(*args, **kwargs)
+        self.fields['name'].disabled = True
+        self.fields['mini_league'].disabled = True
+        self.fields['start_date'].disabled = True
+        self.fields['end_date'].disabled = True
+        self.fields['split_of_gameweek_fee'].disabled = True
+        self.fields['prize_split'].disabled = True
+        self.fields['gameweeks'].disabled = True
+        self.fields['winner'].queryset = self.instance.mini_league.players.all()
+        self.fields['gameweeks'].queryset = self.instance.gameweeks
+        self.fields['winner'].help_text = "Select outright winner of the game. For split pots, leave blank and manually" \
+                                          " create prize"
+        self.fields['mini_league'].queryset = MiniLeague.objects.all()
+        self.fields['gameweeks'].widget.attrs['size'] = 10

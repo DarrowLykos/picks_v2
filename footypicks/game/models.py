@@ -1,5 +1,5 @@
 from django.db import models
-from players.models import Player
+from players.models import Player, Transaction
 from .custom_functions import randomised_password
 from django.core.validators import MinValueValidator
 from datetime import datetime, timedelta, timezone
@@ -338,7 +338,7 @@ class MiniLeague(models.Model):
 
 
 class Gameweek(models.Model):
-
+    # TODO block creation if start date > end date
     # A collection of fixtures for Players to make predictions on
     # There are multiple Gameweeks in a Mini League
     name = models.CharField(max_length=25)
@@ -357,6 +357,8 @@ class Gameweek(models.Model):
     split_of_gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
     view_only = models.BooleanField(default=False)  # turns the Gameweek into a leaderboard
     prize_split = models.CharField(max_length=1, choices=PRIZE_SPLIT_LIST, default="1")
+    winner = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='gameweek_wins', related_query_name='gameweeks_won')
     # last_refresh = models.DateTimeField()
 
     def __str__(self):
@@ -438,14 +440,15 @@ class Gameweek(models.Model):
         return tbl
 
     def prize_pool(self):
-        total_plays = PlayerGameweek.objects.annotate(count=Count('predictions')).filter(gameweek=self, count__gt=0).count()
+        total_plays = PlayerGameweek.objects.exclude(valid=False).annotate(
+            count=Count('predictions')).filter(gameweek=self, count__gt=0).count()
         return total_plays * self.split_of_gameweek_fee
 
 
 class AggregatedGame(models.Model):
     name = models.CharField(max_length=25)
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
-    gameweeks = models.ManyToManyField(Gameweek, related_name="leaderboards")
+    gameweeks = models.ManyToManyField(Gameweek, related_name="leaderboards", blank=True)
     mini_league = models.ForeignKey(MiniLeague, on_delete=models.CASCADE, related_name="leaderboards")
     primary_ag = models.BooleanField(verbose_name="Primary Mini-League Leaderboard", default=False) #  determines if this is the primary AG for the mini-league
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
@@ -457,6 +460,8 @@ class AggregatedGame(models.Model):
     # Fee is per Gameweek, so Leaderboards with multiple gameweeks will have multiple fees
     split_of_gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
     prize_split = models.CharField(max_length=1, choices=PRIZE_SPLIT_LIST, default="1")
+    winner = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='leaderboard_wins', related_query_name='leaderboards_won')
 
     def __str__(self):
         return f"{self.mini_league} | {self.name}"
@@ -514,9 +519,10 @@ class AggregatedGame(models.Model):
         return tbl
 
     def prize_pool(self):
-        total_plays = PlayerGameweek.objects.annotate(count=Count('predictions')).filter(
+        total_plays = PlayerGameweek.objects.exclude(valid=False).annotate(count=Count('predictions')).filter(
             gameweek__in=self.gameweeks.all(),
             count__gt=0).count()
+        print("TOT", total_plays)
         return total_plays * self.split_of_gameweek_fee
 
 class PredictionManager(models.Manager):
@@ -636,6 +642,10 @@ class PlayerGameweek(models.Model):
     points = models.IntegerField(default=0)
     paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     valid = models.BooleanField(default=False)
+    payment = models.ForeignKey(Transaction, null=True, on_delete=models.SET_NULL, related_name="game_payements",
+                                related_query_name="game_payment", blank=True)
+    prize = models.ForeignKey(Transaction, null=True, on_delete=models.SET_NULL, related_name="game_prizes",
+                              related_query_name="game_prize", blank=True)
 
     objects = PlayerGameweekManager()
 
@@ -647,11 +657,11 @@ class PlayerGameweek(models.Model):
         verbose_name_plural = "Players/Gameweeks"
 
     def save(self, *args, **kwargs):
-        try:
+        '''try:
             if self.predictions.all().count() > 0:
                 self.valid = True
         except ValueError:
-            self.valid = False
+            self.valid = False'''
         super(PlayerGameweek, self).save(*args, **kwargs)
 
     def update_points(self):

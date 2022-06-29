@@ -6,21 +6,21 @@
     <th class="text-center">Total</th>
     </thead>
     <tr>
-        <th>Pending</th>
+        <th><abbr title="Awaiting confirmation of receipt/send">Pending</abbr></th>
         <td class="text-center">&pound;{{ pending_transactions.2|floatformat:2 }}</td>
-        <td class="text-center">&pound;{{ pending_transactions.3|floatformat:2 }}</td>
+        <td class="text-center" style="color: #DA4453">-&pound;{{ pending_transactions.3|floatformat:2 }}</td>
         <td class="text-center">&pound;{{ pending_transactions.1|floatformat:2 }}</td>
     </tr>
     <tr>
         <th>Cleared</th>
         <td class="text-center">&pound;{{ cleared_transactions.2|floatformat:2 }}</td>
-        <td class="text-center">&pound;{{ cleared_transactions.3|floatformat:2 }}</td>
+        <td class="text-center" style="color: #DA4453">-&pound;{{ cleared_transactions.3|floatformat:2 }}</td>
         <td class="text-center">&pound;{{ cleared_transactions.1|floatformat:2 }}</td>
     </tr>
-    <tr>
+    <tr class="border-top" style="border-top: 1px solid #DA4453 !important;">
         <th>TOTAL</th>
         <td class="text-center">&pound;{{ balances.3|floatformat:2 }}</td>
-        <td class="text-center">&pound;{{ balances.4|floatformat:2 }}</td>
+        <td class="text-center" style="color: #DA4453">-&pound;{{ balances.4|floatformat:2 }}</td>
         <td class="text-center" class="border-2">&pound;{{ balances.2|floatformat:2 }}</td>
     </tr>
 </table>

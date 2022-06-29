@@ -14,6 +14,9 @@
             <div class="col-auto">
                 <a href="{% url 'game:leaderboard_edit' pk=game.pk %}" class="button btn-default read-more">Edit Leaderboard</a>
             </div>
+            <div class="col-auto">
+                <a href="{% url 'game:leaderboard_end' pk=game.pk %}" class="button btn-default read-more">End Leaderboard</a>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -35,26 +38,27 @@
         <div class="col-lg-10 col-sm">
             <div class="row post-inner-content">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-12">
                         <h2 class="alignleft">{{ game.name }}</h2>
                     </div>
-                    <div class="col-6">
+                    <!--<div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
+                    </div>-->
+                    <div class="col-6">
+                        <h5 class="alignleft">Last update: {{ game.last_update }}</h5>
                     </div>
                     <div class="col-6">
-                        <h5 class="alignleft"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
+                        <h5 class="alignright"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
                     </div>
-                    <div class="col-6">
-                        <h5 class="alignright">Last update: {{ game.last_update }}</h5>
-                    </div>
+
                     <div id="grad-thin"></div>
                 </div>
-                <div class="col-lg-10 col-sm">
+                <div class="col-lg-9 col-sm">
                     <h5>Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=leaderboard %}
-                    INSERT LIST OF PLAYER PERFORMANCE BY GAMEWEEK HERE
+                    <!--INSERT LIST OF PLAYER PERFORMANCE BY GAMEWEEK HERE-->
                 </div>
-                <div class="col-lg-2">
+                <div class="col-lg-3">
                     <h5>Games</h5>
                     {% include 'game/partials/leaderboard_list.html' with leaderboards=games_for_lb %}
                 </div>

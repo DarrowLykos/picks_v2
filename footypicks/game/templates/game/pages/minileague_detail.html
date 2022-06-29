@@ -52,16 +52,14 @@
         <div class="col-lg-10 col-sm">
             <div class="row post-inner-content">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-12">
                         <h2 class="alignleft">{{ league }}</h2>
                     </div>
-                    <div class="col ">
+                    <!--<div class="col ">
                         <h3 class="alignright">{{ league.get_status_display }}</h3>
-                    </div>
-                    <div class="row">
-                        <div class="col ">
-                            <h5 class="alignright">Last update: {{ league.last_update }}</h5>
-                        </div>
+                    </div>-->
+                    <div class="col-6">
+                        <h5 class="alignleft">Last update: {{ league.last_update }}</h5>
                     </div>
                 </div>
                 <div id="grad-thin"></div>
@@ -79,6 +77,12 @@
                     <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
                 </div>
+                {% if player_is_owner %}
+                <div class="col-lg-6 col-sm-12 p-2">
+                    <h5>Player Balances</h5>
+                    {% include 'game/partials/gameweek_player_balances.html' %}
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
