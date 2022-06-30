@@ -1,6 +1,9 @@
-from .base_settings import *
+#from .base_settings import *
 from dotenv import load_dotenv
+import os
 load_dotenv()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 DEBUG = False
 

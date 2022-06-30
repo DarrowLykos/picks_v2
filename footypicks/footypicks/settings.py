@@ -16,17 +16,25 @@ from django.contrib.messages import constants as messages
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+print(BASE_DIR)
 # Quick-start development app_settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
+
+if "Py Projects" in BASE_DIR:
+    print("DEV")
+    from .app_settings.dev import *
+else:
+    print("PROD")
+    from .app_settings.prod import *
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!+)p=ft^jr+$kni!c1w*9!xaj)*6)ir)4zh!(=b=8a8j!xf#b-'
+'''SECRET_KEY = '!+)p=ft^jr+$kni!c1w*9!xaj)*6)ir)4zh!(=b=8a8j!xf#b-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 'sjones187.ddns.net', ]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 'sjones187.ddns.net', ]'''
 
 
 # Application definition
@@ -79,12 +87,12 @@ WSGI_APPLICATION = 'footypicks.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-}
+}'''
 
 
 # Password validation
