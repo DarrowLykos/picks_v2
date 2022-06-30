@@ -9,3 +9,4 @@ settings
 .env
 db.sqlite3
 __pycache__
+dev
