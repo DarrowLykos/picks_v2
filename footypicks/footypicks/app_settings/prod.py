@@ -1,4 +1,4 @@
-from .base import *
+from .base_settings import *
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -14,3 +14,13 @@ EMAIL_HOST_PASSWORD = str(os.getenv('GMAIL_KEY'))
 EMAIL_USE_TLS = True
 
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'footypicks$default',
+        'USER': 'footypicks',
+        'PASSWORD': 'rigwaitlawny',
+        'HOST': 'footypicks.mysql.pythonanywhere-services.com',
+    }
+}

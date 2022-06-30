@@ -1,4 +1,4 @@
-from .base import *
+from .base_settings import *
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -14,3 +14,9 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 's
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent-emails')
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
