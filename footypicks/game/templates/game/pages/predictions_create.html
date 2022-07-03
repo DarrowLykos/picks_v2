@@ -34,10 +34,10 @@
                     Game has started. Some fixtures may not be available to predict.
                 </div>
                 {% endif %}
-                <table class="table table-sm small border-0">
+                <table class="table table-sm small border-0 w-100">
                     <thead>
                         <th class="text-center" colspan="3">Fixture / Prediction</th>
-                        <th class="text-center">Kick Off / Locked</th>
+                        <th class="text-center" id="content-desktop">Kick Off / Locked</th>
                     </thead>
                     <tbody>
                         {% for pick in existing_picks %}
@@ -47,15 +47,19 @@
                                 <img src="{{ pick.fixture.home_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" id="content-desktop">
                                 {{ pick.fixture.fixture }}
+                            </td>
+                            <td style="width: auto;" class="text-center" id="content-mobile">
+                                {{ pick.fixture.fix }}<br>
+                                {{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}
                             </td>
                             <td class="text-left">
                                 {% if pick.fixture.away_team.thumbnail %}
                                 <img src="{{ pick.fixture.away_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center">{{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}</td>
+                            <td class="text-center" id="content-desktop">{{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}</td>
                         </tr>
                         <tr class="">
                             {% if pick.locked or pick.fixture.status != "Upcoming" %}
@@ -69,7 +73,7 @@
                                 <input class="text-center" type="text" value="{{ pick.away_score }}" id="exist_away_{{ pick.id }}" name="exist_away_{{ pick.id }}">
                             </td>
                             {% endif %}
-                            <td class="text-center border-bottom">
+                            <td class="text-center border-bottom " id="content-desktop">
                                 {% if not pick.valid %}
                                 <i class="fa-solid fa-ban"></i>
                                 {% elif pick.locked or pick.fixture.status != "Upcoming" %}
@@ -88,15 +92,19 @@
                                 <img src="{{ fix.home_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" id="content-desktop">
                                 {{ fix.fixture }}
+                            </td>
+                            <td class="text-center" id="content-mobile">
+                                {{ fix.fix }}<br>
+                                {{ fix.competition.short_name }} | {{ fix.kick_off }}
                             </td>
                             <td class="text-left">
                                 {% if fix.away_team.thumbnail %}
                                 <img src="{{ fix.away_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center">{{ fix.competition.short_name }} | {{ fix.kick_off }}</td>
+                            <td class="text-center" id="content-desktop">{{ fix.competition.short_name }} | {{ fix.kick_off }}</td>
                         </tr>
                         <tr class="">
                             {% if fix.status == "Upcoming" %}
@@ -106,7 +114,7 @@
                             <td class="text-center border-bottom"><i class="fa-solid fa-pen-to-square"></i></td>
                             {% elif fix.status != "Upcoming" %}
                             <td class="text-center border-bottom" colspan="3"><span class="text-bold">Missed Kick Off</span></td>
-                            <td class="text-center border-bottom"><i class="fa-solid fa-lock"></i></td>
+                            <td class="text-center border-bottom" id="content-desktop"><i class="fa-solid fa-lock"></i></td>
                             {% endif %}
                         </tr>
                         {% endfor %}

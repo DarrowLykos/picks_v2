@@ -29,9 +29,11 @@
             <div class="col-lg-12 col-sm">
                 <h5>Personal Details</h5>
                 {% if player.thumbnail %}
-                <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="100%">
+                <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="100%" id="content-desktop">
+                <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="50%" id="content-mobile">
                 {% else %}
-                <img class="p-1" src="{% static 'game/img/default.png' %}" alt="Profile Picture" width="100%">
+                <img class="p-1" src="{% static 'game/img/default.png' %}" alt="Profile Picture" width="100%" id="content-desktop">
+                <img class="p-1" src="{% static 'game/img/default.png' %}" alt="Profile Picture" width="50%" id="content-mobile">
                 {% endif %}
                 <table class="table table-sm small">
                     <tr>

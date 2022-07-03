@@ -6,7 +6,7 @@ from django.db.models import Count, Sum, Avg, Max, Min
 class Player(models.Model):
     #Uses out of the box Django user for auth etc
     # This model extends the user model to allow additional fields like display pics etc
-    
+    #TODO make sure Player model is created when a new user signs up
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     thumbnail = models.ImageField(upload_to='player-pics/', blank=True, null=True, default='')
 

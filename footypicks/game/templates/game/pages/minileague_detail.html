@@ -34,6 +34,43 @@
     </div>
     {% include 'game/partials/messages.html' %}
     <div class="row m-1">
+        <div class="col-lg-10 col-sm col-md-8">
+            <div class="row post-inner-content">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="alignleft">{{ league }}</h2>
+                    </div>
+                    <!--<div class="col ">
+                        <h3 class="alignright">{{ league.get_status_display }}</h3>
+                    </div>-->
+                    <div class="col-12">
+                        <h5 class="alignleft">Last update: {{ league.last_update|timesince }} ago</h5>
+                    </div>
+                </div>
+                <div id="grad-thin"></div>
+                <div class="col-lg-2 col-sm">
+                    <h5>Leaderboards</h5>
+                    {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
+                </div>
+                <div class="col-lg-3 col-sm">
+                    <h5>Games</h5>
+                    {% include 'game/partials/gameweeks_list.html' with games=prev_games heading="Previous" %}
+                    {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
+                    <a href="{% url 'game:gameweek_list' pk=league.id %}">All Games</a>
+                    <div id="grad-thin"></div>
+                </div>
+                <div class="col-lg-7 col-sm p-1">
+                    <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
+                    {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
+                </div>
+                {% if player_is_owner %}
+                <div class="col-lg-6 col-sm-12 p-2">
+                    <h5>Player Balances</h5>
+                    {% include 'game/partials/gameweek_player_balances.html' %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
         <div class="col-lg-2 col-sm col-md-4">
             <div class="row well">
                 <div class="col-auto">
@@ -47,42 +84,6 @@
                     <hr class="title-line">
                     {% include 'game/partials/side_menu.html' %}
                 </div>
-            </div>
-        </div>
-        <div class="col-lg-10 col-sm col-md-8">
-            <div class="row post-inner-content">
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="alignleft">{{ league }}</h2>
-                    </div>
-                    <!--<div class="col ">
-                        <h3 class="alignright">{{ league.get_status_display }}</h3>
-                    </div>-->
-                    <div class="col-6">
-                        <h5 class="alignleft">Last update: {{ league.last_update }}</h5>
-                    </div>
-                </div>
-                <div id="grad-thin"></div>
-                <div class="col-lg-2 col-sm">
-                    <h5>Leaderboards</h5>
-                    {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
-                </div>
-                <div class="col-lg-3 col-sm">
-                    <h5>Games</h5>
-                    {% include 'game/partials/gameweeks_list.html' with games=prev_games heading="Previous" %}
-                    {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
-                    <a href="{% url 'game:gameweek_list' pk=league.id %}" class="btn btn-default btn-sm">All Games</a>
-                </div>
-                <div class="col-lg-7 col-sm p-1">
-                    <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
-                    {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
-                </div>
-                {% if player_is_owner %}
-                <div class="col-lg-6 col-sm-12 p-2">
-                    <h5>Player Balances</h5>
-                    {% include 'game/partials/gameweek_player_balances.html' %}
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>

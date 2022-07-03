@@ -55,12 +55,14 @@ class GetRoundEvents:
                 fixture.home_team = home_team
                 fixture.away_team = away_team
                 fixture.competition = self.comp
+
             if event_status == "Match Finished":
                 fixture.home_score = int(event['intHomeScore'])
                 fixture.away_score = int(event['intAwayScore'])
             if not event['strPostponed'] == "no":
                 fixture.postponed = True
                 fixture.sportsdb_id = None
+            fixture.sportsdb_round = int(event['intRound'])
             fixture.ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
             fixture.ko_time = datetime.strptime(event['strTime'], "%H:%M:%S")
             fixture.save()

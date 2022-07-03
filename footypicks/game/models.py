@@ -238,6 +238,10 @@ class Fixture(models.Model):
     def fixture(self):
         return f"{self.home_team} vs {self.away_team}"
 
+    def fix(self):
+        # ABC vs XYZ
+        return f"{self.home_team.initial_name} vs {self.away_team.initial_name}"
+
     def full_desc(self):
         # Home Team vs Away Team | Comp Name | Kick Off | Score
         return f"{self.home_team} vs {self.away_team} | {self.competition.short_name} | {self.kick_off()} | {self.final_score}"

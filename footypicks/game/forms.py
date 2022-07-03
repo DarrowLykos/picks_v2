@@ -30,6 +30,7 @@ class JoinLeagueForm(forms.Form):
 
 
 class PlayerDetailsForm(forms.Form):
+    email_address = forms.EmailField()
     username = forms.CharField(label='Username',
                                min_length=3,
                                max_length=25)

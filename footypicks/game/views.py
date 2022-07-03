@@ -441,17 +441,21 @@ class GameweekLeaderboardCreate(LoginRequiredMixin, UserPassesTestMixin, CreateT
             return MiniLeague.objects.get(pk=minileague).player_is_owner(self.request.user.player.id)
         else:  # No ML provided
             return True
-        
+
+    def get_success_url(self):
+        # Redirect to the Gameweek detail page
+        return reverse('game:leaderboard_detail', kwargs={'pk': self.object.id})
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create Leaderboard'
         return context
 
     def form_valid(self, form):
-        form = form.cleaned_data
-        primary_ag = form['primary_ag']
-        ml = form.mini_league
-        if ml.leaderboards.filter(primary_ag=True) == 1:
+        form_cleaned = form.cleaned_data
+        primary_ag = form_cleaned['primary_ag']
+        ml = form_cleaned['mini_league']
+        if ml.leaderboards.filter(primary_ag=True).exists():
             messages.error(self.request, "Mini League already has a primary Leaderboard. Please remove that first, then try again")
             return reverse('game:leaderboard_create', kwargs={'pk': self.object.id, 'initial': form})
         # TODO double check split_of_gameweek_fee doesn't push us over the gameweek_fee for shared gameweeks
@@ -778,6 +782,7 @@ class PlayerEdit(LoginRequiredMixin, FormView):
         initial = super().get_initial()
         initial['display_pic'] = self.get_object().thumbnail
         initial['username'] = self.get_object().user.username
+        initial['email_address'] = self.get_object().user.email
         return initial
 
     def form_valid(self, form):
@@ -787,8 +792,11 @@ class PlayerEdit(LoginRequiredMixin, FormView):
         user = player.user
         if not user.username == form['username']:
             user.username = form['username']
-            user.save()
             messages.success(self.request, "Username changed")
+        if not user.email == form['email_address']:
+            user.email = form['email_address']
+            messages.success(self.request, "Email changed")
+        user.save()
         print(player.thumbnail)
         print(form['display_pic'])
         print(form)
