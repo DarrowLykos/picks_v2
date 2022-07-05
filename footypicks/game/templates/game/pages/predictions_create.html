@@ -17,7 +17,7 @@
     </div>
     {% include 'game/partials/messages.html' %}
     <div class="row m-1">
-        <div class="col-lg-8 col-sm-12 post-inner-content">
+        <div class="col-lg-8 col-sm-12 post-inner-content p-2">
             <h2>{{ game }}</h2>
             <form method="post" id="picks_form">
                 {% csrf_token %}
@@ -36,44 +36,47 @@
                 {% endif %}
                 <table class="table table-sm small border-0 w-100">
                     <thead>
-                        <th class="text-center" colspan="3">Fixture / Prediction</th>
-                        <th class="text-center" id="content-desktop">Kick Off / Locked</th>
+                        <th class="text-center" colspan="5">Fixture / Prediction</th>
                     </thead>
                     <tbody>
                         {% for pick in existing_picks %}
-                        <tr class="">
+                        <tr id="">
+                            <td class="text-center" colspan="5">{{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}</td>
+                        </tr>
+                        <tr id="">
+                            <div class="form-group">
+                            {% if pick.locked or pick.fixture.status != "Upcoming" %}
+                            <td class="text-center align-middle"><h5 class="mb-0">{{ pick.home_score }}</h5></td>
+                            {% else %}
+                            <td class="text-end">
+                                <input class="prediction-input" type="number" value="{{ pick.home_score }}" pattern="\d*" id="exist_home_{{ pick.id }}" min="0" name="exist_home_{{ pick.id }}">
+                            </td>
+                            {% endif %}
                             <td class="text-end">
                                 {% if pick.fixture.home_team.thumbnail %}
                                 <img src="{{ pick.fixture.home_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center" id="content-desktop">
-                                {{ pick.fixture.fixture }}
-                            </td>
-                            <td style="width: auto;" class="text-center" id="content-mobile">
-                                {{ pick.fixture.fix }}<br>
-                                {{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}
-                            </td>
+                            <td class="text-center align-bottom"> vs </td>
                             <td class="text-left">
                                 {% if pick.fixture.away_team.thumbnail %}
                                 <img src="{{ pick.fixture.away_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center" id="content-desktop">{{ pick.fixture.competition.short_name }} | {{ pick.fixture.kick_off }}</td>
-                        </tr>
-                        <tr class="">
                             {% if pick.locked or pick.fixture.status != "Upcoming" %}
-                            <td class="text-center border-bottom" colspan="3">{{ pick.pick_as_string }}</td>
+                            <td class="text-center align-middle"><h5 class="mb-0">{{ pick.away_score }}</h5></td>
                             {% else %}
-                            <td class="text-end border-bottom">
-                                <input class="text-center" type="text" value="{{ pick.home_score }}" id="exist_home_{{ pick.id }}" name="exist_home_{{ pick.id }}">
-                            </td>
-                            <td class="text-center border-bottom">-</td>
-                            <td class="text-start border-bottom">
-                                <input class="text-center" type="text" value="{{ pick.away_score }}" id="exist_away_{{ pick.id }}" name="exist_away_{{ pick.id }}">
+                            <td class="text-start">
+                                <input class="prediction-input" type="number" value="{{ pick.away_score }}" pattern="\d*" min="0" id="exist_away_{{ pick.id }}" name="exist_away_{{ pick.id }}">
                             </td>
                             {% endif %}
-                            <td class="text-center border-bottom " id="content-desktop">
+                            </div>
+                        </tr>
+                        <tr id="">
+                            <td class="text-end border-bottom" colspan="2">
+                                <label for="exist_home_{{ pick.id }}">{{ pick.fixture.home_team }}</label>
+                            </td>
+                            <td class="text-center border-bottom">
                                 {% if not pick.valid %}
                                 <i class="fa-solid fa-ban"></i>
                                 {% elif pick.locked or pick.fixture.status != "Upcoming" %}
@@ -82,45 +85,60 @@
                                 <i class="fa-solid fa-lock-open"></i>
                                 {% endif %}
                             </td>
+                            <td class="text-start border-bottom" colspan="2">
+                                <label for="exist_away_{{ pick.id }}">{{ pick.fixture.away_team }}</label>
+                            </td>
+                            <td class="border-bottom"></td>
                         </tr>
                         {% endfor %}
                         {% if new_fixtures %}
                         {% for fix in new_fixtures %}
-                        <tr class="">
+                        <tr id="">
+                            <td class="text-center" colspan="5">{{ fix.competition.short_name }} | {{ fix.kick_off }}</td>
+                        </tr>
+                        <tr id="">
+                            <div class="form-group">
+                            {% if fix.status == "Upcoming" %}
+                            <td class="prediction-input"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
+                            {% elif fix.status != "Upcoming" %}
+                            <td class="text-center align-middle"><h5 class="mb-0">LOCKED</h5></td>
+                            {% endif %}
                             <td class="text-end">
                                 {% if fix.home_team.thumbnail %}
                                 <img src="{{ fix.home_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center" id="content-desktop">
-                                {{ fix.fixture }}
-                            </td>
-                            <td class="text-center" id="content-mobile">
-                                {{ fix.fix }}<br>
-                                {{ fix.competition.short_name }} | {{ fix.kick_off }}
-                            </td>
+                            <td class="text-center align-bottom"> vs </td>
                             <td class="text-left">
                                 {% if fix.away_team.thumbnail %}
                                 <img src="{{ fix.away_team.thumbnail.url }}" width="30px">
                                 {% endif %}
                             </td>
-                            <td class="text-center" id="content-desktop">{{ fix.competition.short_name }} | {{ fix.kick_off }}</td>
-                        </tr>
-                        <tr class="">
                             {% if fix.status == "Upcoming" %}
-                            <td class="text-center border-bottom"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
-                            <td class="text-center border-bottom">-</td>
-                            <td class="text-center border-bottom"><input class="text-center" type="text" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}"></td>
-                            <td class="text-center border-bottom"><i class="fa-solid fa-pen-to-square"></i></td>
+                            <td class="prediction-input"><input class="text-center" type="text" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}"></td>
                             {% elif fix.status != "Upcoming" %}
-                            <td class="text-center border-bottom" colspan="3"><span class="text-bold">Missed Kick Off</span></td>
-                            <td class="text-center border-bottom" id="content-desktop"><i class="fa-solid fa-lock"></i></td>
+                            <td class="text-center align-middle"><h5 class="mb-0">LOCKED</h5></td>
                             {% endif %}
+                            </div>
+                        </tr>
+                        <tr id="">
+                            <td class="text-end border-bottom" colspan="2">
+                                <label for="new_home_{{ fix.id }}">{{ fix.home_team }}</label>
+                            </td>
+                            <td class="text-center border-bottom">
+                                {% if fix.status != "Upcoming" %}
+                                <i class="fa-solid fa-lock"></i>
+                                {% else %}
+                                <i class="fa-solid fa-lock-open"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-start border-bottom" colspan="2">
+                                <label for="new_away_{{ fix.id }}">{{ fix.away_team }}</label>
+                            </td>
+                            <td class="border-bottom"></td>
                         </tr>
                         {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
+                        {% endif %}
                     </tbody>
                 </table>
                 <label for="joker_select">Joker Fixture</label>
