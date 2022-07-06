@@ -5,21 +5,21 @@
 
 <div class="container main-content-area">
     <div class="row m-1">
-        {% if request.user == player.user %}
         <div class="btn-group">
-        <div class="col-auto">
-            <a href="{% url 'game:player_edit' %}" class="button btn-default read-more">Edit Details</a>
+            {% if request.user == player.user %}
+            <div class="col-auto">
+                <a href="{% url 'game:player_edit' %}" class="button btn-default read-more">Edit Details</a>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'password_change' %}" class="button btn-default read-more">Change Password</a>
+            </div>
+            {% endif %}
+            {% if request.user == player.user or request.user.is_staff %}
+            <div class="col-auto">
+                <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Send/Receive</a>
+            </div>
+            {% endif %}
         </div>
-        <div class="col-auto">
-            <a href="{% url 'password_change' %}" class="button btn-default read-more">Change Password</a>
-        </div>
-        {% endif %}
-        {% if request.user == player.user or request.user.is_staff %}
-        <div class="col-auto">
-            <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Send/Receive</a>
-        </div>
-        </div>
-        {% endif %}
     </div>
     <div class="row m-1">
         <div class="col post-title-content">
