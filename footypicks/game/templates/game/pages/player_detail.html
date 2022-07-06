@@ -13,6 +13,8 @@
         <div class="col-auto">
             <a href="{% url 'password_change' %}" class="button btn-default read-more">Change Password</a>
         </div>
+        {% endif %}
+        {% if request.user == player.user or request.user.is_staff %}
         <div class="col-auto">
             <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Send/Receive</a>
         </div>
@@ -64,7 +66,7 @@
         <div class="col-lg-6 col-sm-12 col-md-8">
             <div class="col-lg-6 col-sm">
                 <h5>Current Balances</h5>
-                {% if request.user.player == player %}
+                {% if request.user.player == player or request.user.is_staff %}
                 {% include 'game/partials/player_balance.html' %}
                 {% else %}
                 <p>Restricted view</p>
@@ -73,7 +75,7 @@
             <div id="grad-thin"></div>
             <div class="col-lg-12 col-sm ">
                 <h5>Recent Transaction History</h5>
-                {% if request.user.player == player %}
+                {% if request.user.player == player or request.user.is_staff %}
                 {% include 'game/partials/transaction_list.html' with transactions=all_transactions %}
                 <a class="p-1" href="{% url 'game:player_transactions' %}">More Transactions</a>
                 {% else %}
