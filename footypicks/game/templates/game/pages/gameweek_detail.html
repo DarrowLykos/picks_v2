@@ -56,7 +56,9 @@
                 </div>
                 <div class="col-lg-4 col-sm-6 col-md-6">
                     {% if user.is_authenticated or player %}
-                    <h5>{{ player }}'s Picks</h5>
+                    <h5>
+                        {{ player }}'s Picks
+                    </h5>
                     {% else %}
                     <h5>Picks</h5>
                     {% endif %}

@@ -1,28 +1,50 @@
 {% load tz %}
 <table class="table table-sm small table-hover">
     <thead>
-        <th>Competition</th>
-        <th colspan="3">Fixture</th>
-        <th>Kick Off</th>
-        <th class="text-center">Result</th>
+            <th>
+                <span id="content-desktop">Competition</span>
+                <span id="content-mobile">Comp</span>
+            </th>
+            <th colspan="3" class="text-center">
+                <span id="content-desktop">Fixture</span>
+                <span id="content-mobile">Fix</span>
+            </th>
+            <th>
+                <span id="content-desktop">Kick Off</span>
+                <span id="content-mobile">KO</span>
+            </th>
+            <th class="text-center">
+                <span id="content-desktop">Result</span>
+                <span id="content-mobile">Res</span>
+            </th>
+        </span>
     </thead>
     {% for fixture in fixtures %}
-    <tr>
-        <td>{{ fixture.competition.name }}</td>
+    <tr class="vertical-middle">
+        <td>
+            <span id="content-desktop">{{ fixture.competition.name }}</span>
+            <span id="content-mobile">{{ fixture.competition.short_name }}</span>
+        </td>
         <td>
             {% if fixture.home_team.thumbnail %}
-            <img src="{{ fixture.home_team.thumbnail.url }}" width="30px">
+            <span id="content-desktop"><img src="{{ fixture.home_team.thumbnail.url }}" width="30px"></span>
+            <span id="content-mobile"><img src="{{ fixture.home_team.thumbnail.url }}" width="15px"></span>
             {% endif %}
         </td>
         <th class="text-center">
-            {{ fixture.fixture }}
+            <span id="content-desktop">{{ fixture.fixture }}</span>
+            <span id="content-mobile">{{ fixture.fix }}</span>
         </th>
         <td>
             {% if fixture.away_team.thumbnail %}
-            <img src="{{ fixture.away_team.thumbnail.url }}" width="30px">
+            <span id="content-desktop"><img src="{{ fixture.away_team.thumbnail.url }}" width="30px"></span>
+            <span id="content-mobile"><img src="{{ fixture.away_team.thumbnail.url }}" width="15px"></span>
             {% endif %}
         </td>
-        <td>{{ fixture.kick_off|localtime|date:"D jS M Y, P e" }}</td>
+        <td>
+            <span id="content-desktop">{{ fixture.kick_off|localtime|date:"D, jS M Y, P" }}</span>
+            <span id="content-mobile">{{ fixture.kick_off|localtime|date:"j/m/Y, P" }}</span>
+        </td>
         <td class="text-center"><h4>{{ fixture.final_score }}</h4></td>
     </tr>
     {% endfor %}

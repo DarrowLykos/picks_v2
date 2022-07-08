@@ -1,29 +1,61 @@
 {% load humanize %}
-<table class="table table-sm small table-hover w-100">
+{% load static %}
+<table class="table table-sm table-hover w-100">
     <thead>
-    <tr>
-        <th style="width:5%;">Position</th>
-        <th>Player</th>
-        <th class="text-center">Gameweeks</th>
-        <th class="text-center">Average</th>
-        <th class="text-center">Max</th>
-        <th class="text-center">Min</th>
-        <th class="text-center">Points</th>
+    <tr class="vertical-middle">
+        <th style="width:5%;" class="text-center">
+            <span id="content-desktop">Position</span>
+            <span id="content-mobile">Pos</span>
+        </th>
+        <th>
+            <span id="content-desktop">Player</span>
+            <span id="content-mobile">Player</span>
+        </th>
+        <th class="text-center">
+            <span id="content-desktop">Gameweeks</span>
+            <span id="content-mobile">GWs</span>
+        </th>
+        <th class="text-center">
+            <span id="content-desktop">Average</span>
+            <span id="content-mobile">Avg</span>
+        </th>
+        <th class="text-center">
+            <span id="content-desktop">Max</span>
+            <span id="content-mobile">Max</span>
+        </th>
+        <th class="text-center">
+            <span id="content-desktop">Min</span>
+            <span id="content-mobile">Min</span>
+        </th>
+        <th class="text-center">
+            <span id="content-desktop">Points</span>
+            <span id="content-mobile">Pts</span>
+        </th>
     </tr>
     </thead>
     {% for plr in leaderboard %}
-    <tr>
+    <tr class="vertical-middle">
         {% if forloop.first %}
-        <td><i class="fa-solid fa-trophy gold"></i></td>
+        <td class="text-center">
+            <i id="content-desktop" class="fa-solid fa-trophy gold fa-2xl"></i>
+            <i id="content-mobile" class="fa-solid fa-trophy gold fa-xl"></i>
+        </td>
         {% else %}
-        <td>{{ forloop.counter|ordinal }}</td>
+        <td class="text-center">{{ forloop.counter|ordinal }}</td>
         {% endif %}
-        <th>{{ plr.name }}</th>
+        <th>
+            <!-- {% if plr.thumbnail %}
+            <img class="p-1" src="{{ plr.thumbnail.url }}" alt="Profile Picture" width="30px">
+            {% else %}
+            <img class="p-1" src="{% static 'game/img/default.png' %}" alt="Profile Picture" width="30px">
+            {% endif %} -->
+            {{ plr.name }}
+        </th>
         <td class="text-center">{{ plr.count_gameweeks }}</td>
         <td class="text-center">{{ plr.avg_points|floatformat:2 }}</td>
         <td class="text-center">{{ plr.max_points }}</td>
         <td class="text-center">{{ plr.min_points }}</td>
-        <td class="text-center"><h4>{{ plr.sum_points }}</h4></td>
+        <td class="text-center"><h4 class="m-0">{{ plr.sum_points }}</h4></td>
     </tr>
     {% endfor %}
 </table>

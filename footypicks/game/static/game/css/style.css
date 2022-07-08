@@ -686,7 +686,7 @@ object {
 
 .well {
     background-color: #fff;
-    padding: 25px;
+    padding: 15px;
     border: 1px solid #DADADA;
     overflow: hidden;
     clear: both;
@@ -2732,6 +2732,10 @@ tbody td {
   color: #F2F2F2;
 }
 
+.table-hover tbody tr:hover td i,
+.table-hover tbody tr:hover th i {
+  color: #F2F2F2;
+}
 
 .prediction-input {
     text-align: center !important;
@@ -2742,15 +2746,33 @@ tbody td {
 
 #content-desktop {display: none;}
 
+.post-inner-content {
+    padding: 10px 0px !important;
+    }
+
+.main-content-area {
+    padding: 10px 0px !important;
+    }
+
+.well {
+    padding: 10px 0px !important;
+    }
 }
 
 @media screen and (min-width: 769px) {
 
 #content-mobile {display: none;}
+
 .prediction-input {
     text-align: center !important;
     color: #DA4453 !important;
     width:50% !important;
 }
+
+}
+
+.vertical-middle {
+
+vertical-align: middle;
 
 }

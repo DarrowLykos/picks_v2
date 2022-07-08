@@ -7,14 +7,15 @@
     </thead>
     <tbody>
     {% for pick in player_picks %}
-    <tr >
+    <tr class="vertical-middle">
         <td>
             {% if pick.fixture.home_team.thumbnail %}
             <img src="{{ pick.fixture.home_team.thumbnail.url }}" width="30px">
             {% endif %}
         </td>
         <th class="text-center">
-            {{ pick.fixture.fixture }}
+            <span id="content-desktop">{{ pick.fixture.fixture }}</span>
+            <span id="content-mobile">{{ pick.fixture.fix }}</span>
         </th>
         <td>
             {% if pick.fixture.away_team.thumbnail %}
@@ -23,10 +24,10 @@
         </td>
         <td class="text-center">{{ pick.pick_as_string }}</td>
         <td class="text-center">{% if pick.joker %}
-            <i class="fa-solid fa-xmark red"></i>
+            <i class="fa-solid fa-xmark red fa-2xl"></i>
             {% endif %}
         </td>
-        <td class="text-center"><h4>{{ pick.points }}</h4></td>
+        <td class="text-center"><h4 class="m-0">{{ pick.points }}</h4></td>
     </tr>
     {% endfor %}
     <tr>

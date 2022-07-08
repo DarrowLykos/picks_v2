@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div id="grad-thin"></div>
-                <div class="col-lg-2 col-sm">
+                <div class="col-lg-3 col-sm">
                     <h5>Leaderboards</h5>
                     {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
                 </div>
@@ -59,7 +59,7 @@
                     <a href="{% url 'game:gameweek_list' pk=league.id %}">All Games</a>
                     <div id="grad-thin"></div>
                 </div>
-                <div class="col-lg-7 col-sm p-1">
+                <div class="col-lg-6 col-sm p-1">
                     <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
                 </div>
