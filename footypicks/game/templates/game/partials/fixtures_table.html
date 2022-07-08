@@ -1,3 +1,4 @@
+{% load tz %}
 <table class="table table-sm small table-hover">
     <thead>
         <th>Competition</th>
@@ -9,7 +10,7 @@
     <tr>
         <td>{{ fixture.competition.name }}</td>
         <th>{{ fixture.fixture }}</th>
-        <td>{{ fixture.kick_off }}</td>
+        <td>{{ fixture.kick_off|localtime|date:"D jS M Y, P e" }}</td>
         <td class="text-center">{{ fixture.final_score }}</td>
     </tr>
     {% endfor %}

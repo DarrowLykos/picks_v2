@@ -1,6 +1,8 @@
 # All the functions and processes in dealing with the SportDB website go here
 import requests
 from datetime import datetime
+import pytz
+import datetime as dt
 
 URL_PREFIX = "https://www.thesportsdb.com/api/v1/json/2/"
 
@@ -18,6 +20,7 @@ CUP_ROUNDS = {
     'Final': 200,
 }
 
+LONDON_TZ = pytz.timezone('Europe/London')
 
 class GetRoundEvents:
 
@@ -63,13 +66,17 @@ class GetRoundEvents:
                 fixture.postponed = True
                 fixture.sportsdb_id = None
             fixture.sportsdb_round = int(event['intRound'])
-            fixture.ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
-            fixture.ko_time = datetime.strptime(event['strTime'], "%H:%M:%S")
+            ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
+            ko_time = datetime.strptime(event['strTime'], "%H:%M:%S").time()
+            ko = datetime.combine(ko_date, ko_time)
+            ko += LONDON_TZ.dst(ko)
+            fixture.ko_date = ko.strftime("%Y-%m-%d")
+            fixture.ko_time = ko.strftime("%H:%M:%S")
             fixture.save()
             print(fixture.short_desc(), "Created:", created)
 
 
-class GetFixture:
+'''class GetFixture:
 
     def __init__(self, api_id):
         self.api_id = api_id
@@ -96,5 +103,5 @@ class GetFixture:
         return self.data['dateEvent']
 
     def kickoff(self):
-        return self.data['strTime']
+        return self.data['strTime']'''
 

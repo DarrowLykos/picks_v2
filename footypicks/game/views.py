@@ -84,7 +84,7 @@ class MiniLeagueDetail(DetailView):
             current_player = self.request.user.player
             # These determine if user can edit the ML
             context['player_is_owner'] = self.object.player_is_owner(current_player.id)
-            context['player_is_member'] = self.object.player_is_owner(current_player.id)
+            context['player_is_member'] = self.object.player_is_member(current_player.id)
         # Try to provide Primary AG Leaderboard. Wrapped in a Try to avoid errors if one doesn't exist.
         try:
             context['primary_leaderboard'] = self.object.leaderboards.get(primary_ag=True).leaderboard()
@@ -455,7 +455,7 @@ class GameweekLeaderboardCreate(LoginRequiredMixin, UserPassesTestMixin, CreateT
         form_cleaned = form.cleaned_data
         primary_ag = form_cleaned['primary_ag']
         ml = form_cleaned['mini_league']
-        if ml.leaderboards.filter(primary_ag=True).exists():
+        if ml.leaderboards.filter(primary_ag=True).exists() and primary_ag:
             messages.error(self.request, "Mini League already has a primary Leaderboard. Please remove that first, then try again")
             return reverse('game:leaderboard_create', kwargs={'pk': self.object.id, 'initial': form})
         # TODO double check split_of_gameweek_fee doesn't push us over the gameweek_fee for shared gameweeks
@@ -824,6 +824,7 @@ class PlayerTransactionCreate(LoginRequiredMixin, CreateTemplate):
         context['title'] = 'New Transaction'
         context['subtitle'] = 'Transaction Details'
         context['additional_html'] = f"<h3>Current Balance</h3><strong>&pound;{self.get_form_kwargs()['max_outgoing']}</strong>"
+        context['additional_html'] += f"<h3>Payment Details</h3><p>20-70-93<br>93450368<br>YOUR NAME AS REFERENCE</p>"
         return context
 
     def form_valid(self, form):
@@ -849,7 +850,11 @@ class PlayerTransactionList(LoginRequiredMixin, ListView):
     template_name = 'game/pages/transaction_list.html'
 
     def get_queryset(self, *args, **kwargs):
-        player = self.request.user.player
+        print(self.kwargs)
+        if self.kwargs.get('pk', None) and self.request.user.is_staff:
+            player = Player.objects.get(pk=self.kwargs.get('pk', None))
+        else:
+            player = self.request.user.player
         qs = super(PlayerTransactionList, self).get_queryset(*args, **kwargs)
         qs = qs.filter(player=player)
         print(qs)
@@ -857,7 +862,11 @@ class PlayerTransactionList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        player = self.request.user.player
+        if self.kwargs.get('pk', None) and self.request.user.is_staff:
+            player = Player.objects.get(pk=self.kwargs.get('pk', None))
+        else:
+            player = self.request.user.player
         all_transactions = player.all_transactions()
         context['balances'] = all_transactions
+        context['player'] = player
         return context

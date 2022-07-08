@@ -11,6 +11,7 @@ urlpatterns = [
     path('minileague/<int:pk>/end/', views.MiniLeagueEnd.as_view(), name='minileague_end'),
     path('minileague/<int:pk>/games/', views.GameweekList.as_view(), name='gameweek_list'),
     path('profile/<int:pk>/', views.PlayerDetail.as_view(), name='player_detail'),
+    path('profile/<int:pk>/transactions/', views.PlayerTransactionList.as_view(), name='player_transactions_by_id'),
     path('profile/edit_details/', views.PlayerEdit.as_view(), name='player_edit'),
     path('profile/transactions/', views.PlayerTransactionList.as_view(), name='player_transactions'),
     path('profile/new_transaction/', views.PlayerTransactionCreate.as_view(), name='player_transaction_new'),

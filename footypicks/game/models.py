@@ -268,7 +268,7 @@ class Fixture(models.Model):
 
 
 
-    def kick_off(self, str=True):
+    def kick_off(self, str=False):
         # Date, Time
         if str:
             return datetime.combine(self.ko_date, self.ko_time).strftime('%d %b %Y, %H:%M')
@@ -391,6 +391,7 @@ class Gameweek(models.Model):
 
     def refresh_game(self, finalise=False, override=False):
         print('refresh')
+        self.update_fixtures()
         if self.status in ["L", "U"] or override:
             current_datetime = datetime.now(pytz.utc)
             print(self.last_update + timedelta(minutes=15))
@@ -401,6 +402,18 @@ class Gameweek(models.Model):
                     self.status = "E"
                 self.save()
                 print('saved gw')
+
+
+    def update_fixtures(self):
+        unique_comps_ids = self.fixtures.order_by('competition').values_list('competition', flat=True).distinct()
+        unique_comps = Competition.objects.filter(id__in=unique_comps_ids)
+        from .sportsDB import GetRoundEvents
+        for comp in unique_comps:
+            rounds = self.fixtures.filter(competition=comp).order_by('sportsdb_round').values_list('sportsdb_round', flat=True).distinct()
+            for round in rounds:
+                if round:
+                    print(f'Updating Round {round} of {comp}')
+                    GetRoundEvents(comp, round).update_fixtures()
 
     def update_points(self):
         #self.playergameweek_set.update_points(self.mini_league.score_structure)
