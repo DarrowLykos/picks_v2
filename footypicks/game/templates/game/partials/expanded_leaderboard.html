@@ -18,12 +18,12 @@
         {% else %}
         <td>{{ forloop.counter|ordinal }}</td>
         {% endif %}
-        <td>{{ plr.name }}</td>
+        <th>{{ plr.name }}</th>
         <td class="text-center">{{ plr.count_gameweeks }}</td>
         <td class="text-center">{{ plr.avg_points|floatformat:2 }}</td>
         <td class="text-center">{{ plr.max_points }}</td>
         <td class="text-center">{{ plr.min_points }}</td>
-        <td class="text-center">{{ plr.sum_points }}</td>
+        <td class="text-center"><h4>{{ plr.sum_points }}</h4></td>
     </tr>
     {% endfor %}
 </table>

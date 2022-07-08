@@ -2727,6 +2727,11 @@ tbody td {
   color: #F2F2F2;
 }
 
+.table-hover tbody tr:hover td h4,
+.table-hover tbody tr:hover th h4 {
+  color: #F2F2F2;
+}
+
 
 .prediction-input {
     text-align: center !important;

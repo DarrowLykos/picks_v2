@@ -2,16 +2,28 @@
 <table class="table table-sm small table-hover">
     <thead>
         <th>Competition</th>
-        <th>Fixture</th>
+        <th colspan="3">Fixture</th>
         <th>Kick Off</th>
         <th class="text-center">Result</th>
     </thead>
     {% for fixture in fixtures %}
     <tr>
         <td>{{ fixture.competition.name }}</td>
-        <th>{{ fixture.fixture }}</th>
+        <td>
+            {% if fixture.home_team.thumbnail %}
+            <img src="{{ fixture.home_team.thumbnail.url }}" width="30px">
+            {% endif %}
+        </td>
+        <th class="text-center">
+            {{ fixture.fixture }}
+        </th>
+        <td>
+            {% if fixture.away_team.thumbnail %}
+            <img src="{{ fixture.away_team.thumbnail.url }}" width="30px">
+            {% endif %}
+        </td>
         <td>{{ fixture.kick_off|localtime|date:"D jS M Y, P e" }}</td>
-        <td class="text-center">{{ fixture.final_score }}</td>
+        <td class="text-center"><h4>{{ fixture.final_score }}</h4></td>
     </tr>
     {% endfor %}
 </table>

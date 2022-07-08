@@ -14,8 +14,8 @@
         {% else %}
         <td>{{ forloop.counter|ordinal }}</td>
         {% endif %}
-        <td class="font-weight-bold"><a href="{% url 'game:game_detail' pk=game.pk %}?player={{ player.player.id }}">{{ player.player }}</a></td>
-        <td class="text-center">{{ player.points }}</td>
+        <th class="font-weight-bold"><a href="{% url 'game:game_detail' pk=game.pk %}?player={{ player.player.id }}">{{ player.player }}</a></th>
+        <td class="text-center"><h4>{{ player.points }}</h4></td>
     </tr>
     {% endfor %}
 </table>

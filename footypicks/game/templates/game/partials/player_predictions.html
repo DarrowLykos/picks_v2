@@ -1,20 +1,32 @@
 <table class="table table-sm small table-hover">
     <thead>
-    <th>Fixture</th>
+    <th colspan="3">Fixture</th>
     <th class="text-center">Prediction</th>
     <th class="text-center">Joker</th>
     <th class="text-center">Points</th>
     </thead>
     <tbody>
     {% for pick in player_picks %}
-    <tr>
-        <th>{{ pick.fixture.fixture }}</th>
+    <tr >
+        <td>
+            {% if pick.fixture.home_team.thumbnail %}
+            <img src="{{ pick.fixture.home_team.thumbnail.url }}" width="30px">
+            {% endif %}
+        </td>
+        <th class="text-center">
+            {{ pick.fixture.fixture }}
+        </th>
+        <td>
+            {% if pick.fixture.away_team.thumbnail %}
+            <img src="{{ pick.fixture.away_team.thumbnail.url }}" width="30px">
+            {% endif %}
+        </td>
         <td class="text-center">{{ pick.pick_as_string }}</td>
         <td class="text-center">{% if pick.joker %}
             <i class="fa-solid fa-xmark red"></i>
             {% endif %}
         </td>
-        <td class="text-center">{{ pick.points }}</td>
+        <td class="text-center"><h4>{{ pick.points }}</h4></td>
     </tr>
     {% endfor %}
     <tr>
