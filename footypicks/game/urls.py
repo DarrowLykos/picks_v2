@@ -25,5 +25,6 @@ urlpatterns = [
     path('leaderboard/<int:pk>/edit/', views.GameweekLeaderboardEdit.as_view(), name='leaderboard_edit'),
     path('leaderboard/create/', views.GameweekLeaderboardCreate.as_view(), name='leaderboard_create'),
     path('leaderboard/<int:pk>/end/', views.GameweekLeaderboardEnd.as_view(), name='leaderboard_end'),
-    path("signup/", views.PlayerSignUp.as_view(), name="signup")
+    path("signup/", views.PlayerSignUp.as_view(), name="signup"),
+    path("about/", views.AboutView.as_view(), name="about")
 ]

@@ -53,6 +53,8 @@ class HomeView(TemplateView):
             #return super().get(request, *args, **kwargs)
             return redirect('login')
 
+class AboutView(TemplateView):
+    template_name = 'game/pages/about.html'
 
 
 # Mini League Views
@@ -685,6 +687,7 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                         player_gameweek.payment = fee
                         # Saves the player_gameweek record
                         player_gameweek.save()
+                        messages.info(request, f"Your balance is now &pound;{request.user.player.all_transactions()[2]}")
                     # saves the pick record
                     new_pick.last_changed = datetime.now()
                     new_pick.save()

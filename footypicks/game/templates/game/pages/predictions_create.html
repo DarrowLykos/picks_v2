@@ -99,7 +99,9 @@
                         <tr id="">
                             <div class="form-group">
                             {% if fix.status == "Upcoming" %}
-                            <td class="prediction-input"><input class="text-center" type="text" id="new_home_{{ fix.id }}" name="new_home_{{ fix.id }}"></td>
+                            <td class="text-end">
+                                <input class="prediction-input" type="number" pattern="\d*" id="new_home_{{ fix.id }}" min="0" name="new_home_{{ fix.id }}">
+                            </td>
                             {% elif fix.status != "Upcoming" %}
                             <td class="text-center align-middle"><h5 class="mb-0">LOCKED</h5></td>
                             {% endif %}
@@ -115,7 +117,9 @@
                                 {% endif %}
                             </td>
                             {% if fix.status == "Upcoming" %}
-                            <td class="prediction-input"><input class="text-center" type="text" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}"></td>
+                            <td class="text-start">
+                                <input class="prediction-input" type="number" pattern="\d*" min="0" id="new_away_{{ fix.id }}" name="new_away_{{ fix.id }}">
+                            </td>
                             {% elif fix.status != "Upcoming" %}
                             <td class="text-center align-middle"><h5 class="mb-0">LOCKED</h5></td>
                             {% endif %}
