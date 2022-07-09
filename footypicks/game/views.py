@@ -317,6 +317,8 @@ class GameweekCreate(LoginRequiredMixin, UserPassesTestMixin, CreateTemplate):
         # Auto-add the Gameweek to any AggregatedGames that cover the same start/end period
         for ag in form_cleaned.mini_league.leaderboards.filter(start_date__gte=form_cleaned.start_date,
                                                                end_date__lte=form_cleaned.end_date):
+            #ag.gameweeks.add(form_cleaned)
+            #messages.success(self.request, f"Game added to Leaderboard: {ag}")
             # TODO: auto-add gameweek to AggregatedGames
             pass
 
@@ -423,7 +425,8 @@ class GameweekLeaderboardDetail(DetailView):
         context['leaderboards'] = self.object.mini_league.get_aggregated_gameweeks()
         print(self.object.leaderboard())
         context['leaderboard'] = self.object.leaderboard()
-        context['player_is_owner'] = self.object.mini_league.player_is_owner(self.request.user.player.id)
+        if self.request.user.is_authenticated:
+            context['player_is_owner'] = self.object.mini_league.player_is_owner(self.request.user.player.id)
 
         return context
 

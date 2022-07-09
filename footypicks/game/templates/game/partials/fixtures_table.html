@@ -22,8 +22,11 @@
     {% for fixture in fixtures %}
     <tr class="vertical-middle">
         <td>
+            {% if fixture.competition.thumbnail %}
+            <span id="content-desktop"><img src="{{ fixture.competition.thumbnail.url }}" width="30px"></span>
+            <span id="content-mobile"><img src="{{ fixture.competition.thumbnail.url }}" width="15px"></span>
+            {% endif %}
             <span id="content-desktop">{{ fixture.competition.name }}</span>
-            <span id="content-mobile">{{ fixture.competition.short_name }}</span>
         </td>
         <td>
             {% if fixture.home_team.thumbnail %}
@@ -43,7 +46,7 @@
         </td>
         <td>
             <span id="content-desktop">{{ fixture.kick_off|localtime|date:"D, jS M Y, P" }}</span>
-            <span id="content-mobile">{{ fixture.kick_off|localtime|date:"j/m/Y, P" }}</span>
+            <span id="content-mobile">{{ fixture.kick_off|localtime|date:"d/m/Y, P" }}</span>
         </td>
         <td class="text-center"><h4>{{ fixture.final_score }}</h4></td>
     </tr>

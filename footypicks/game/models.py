@@ -162,6 +162,7 @@ class Competition(models.Model):
     sportsdb_id = models.CharField(verbose_name="SportsDb ID", max_length=20, null=True, blank=True)
     name = models.CharField(max_length=25)
     short_name = models.CharField(max_length=3)
+    thumbnail = models.ImageField('Logo', upload_to="team-logos/", blank=True, null=True)
     season = models.CharField(max_length=9, validators=[RegexValidator(r"\d{4}-\d{4}")])
 
     def __str__(self):
