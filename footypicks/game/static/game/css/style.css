@@ -2673,6 +2673,7 @@ margin: -10px 0px 0px -180px;
 #grad-nav {
     height: 15px;
   background-image: linear-gradient(#000000, #DA4453, #F2F2F2);
+  margin-top: 30px;
 }
 
 #grad {
@@ -2757,6 +2758,10 @@ tbody td {
 .well {
     padding: 10px 0px !important;
     }
+
+#grad-nav {
+    margin-top: 20px !important;
+    }
 }
 
 @media screen and (min-width: 769px) {
@@ -2767,7 +2772,8 @@ tbody td {
     text-align: center !important;
     color: #DA4453 !important;
     width:50% !important;
-}
+    }
+
 
 }
 

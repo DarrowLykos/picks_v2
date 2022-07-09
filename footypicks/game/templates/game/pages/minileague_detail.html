@@ -8,22 +8,34 @@
         {% if player_is_owner %}
         <div class="btn-group">
             <div class="col-auto pr-1">
-                <a href="{% url 'game:minileague_invite' pk=league.pk %}" class="button btn-default read-more">Invite</a>
+                <a href="{% url 'game:minileague_invite' pk=league.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-share-nodes"></i> Invite
+                </a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:minileague_edit' pk=league.pk %}" class="button btn-default read-more">Edit Mini-League</a>
+                <a href="{% url 'game:minileague_edit' pk=league.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:leaderboard_create' %}?minileague={{ league.id }}" class="button btn-default read-more">New Leaderboard</a>
+                <a href="{% url 'game:leaderboard_create' %}?minileague={{ league.id }}"
+                   class="button btn-default read-more">
+                    <i class="fa-solid fa-plus"></i> Leaderboard
+                </a>
             </div>
             <div class="col-auto pr-1">
-                <a href="{% url 'game:game_create'%}?minileague={{ league.id }}" class="button btn-default read-more">New Game</a>
+                <a href="{% url 'game:game_create'%}?minileague={{ league.id }}"
+                   class="button btn-default read-more">
+                    <i class="fa-solid fa-plus"></i> Game
+                </a>
             </div>
         </div>
         {% endif %}
         {% if not player_is_member %}
         <div class="col-auto">
-            <a href="{% url 'game:minileague_join' pk=league.pk %}" class="button btn-default read-more">Join</a>
+            <a href="{% url 'game:minileague_join' pk=league.pk %}" class="button btn-default read-more">
+                <i class="fa-solid fa-user-plus"></i>Join
+            </a>
         </div>
         {% endif %}
     </div>
@@ -36,31 +48,20 @@
     <div class="row m-1">
         <div class="col-lg-10 col-sm col-md-8">
             <div class="row post-inner-content">
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="alignleft">{{ league }}</h2>
-                    </div>
-                    <!--<div class="col ">
-                        <h3 class="alignright">{{ league.get_status_display }}</h3>
-                    </div>-->
-                    <div class="col-12">
-                        <h5 class="alignleft">Last update: {{ league.last_update|timesince }} ago</h5>
-                    </div>
-                </div>
                 <div id="grad-thin"></div>
                 <div class="col-lg-3 col-sm">
-                    <h5>Leaderboards</h5>
+                    <h5><i class="fa-solid fa-table"></i> Leaderboards</h5>
                     {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
                 </div>
                 <div class="col-lg-3 col-sm">
-                    <h5>Games</h5>
+                    <h5><i class="fa-solid fa-dice"></i> Games</h5>
                     {% include 'game/partials/gameweeks_list.html' with games=prev_games heading="Previous" %}
                     {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
                     <a href="{% url 'game:gameweek_list' pk=league.id %}">All Games</a>
                     <div id="grad-thin"></div>
                 </div>
                 <div class="col-lg-6 col-sm p-1">
-                    <h5>{{ league.primary_leaderboard.name }} Leaderboard</h5>
+                    <h5><i class="fa-solid fa-table"></i> {{ league.primary_leaderboard.name }} Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
                 </div>
                 {% if player_is_owner %}
@@ -74,7 +75,7 @@
         <div class="col-lg-2 col-sm col-md-4">
             <div class="row well">
                 <div class="col-auto">
-                    <h5>Entry Cost</h5>
+                    <h5><i class="fa-solid fa-sterling-sign"></i> Entry Cost</h5>
                     <table class="table table-sm small">
                         <tr>
                             <th style="width:70%;">Per Game</th>

@@ -8,15 +8,21 @@
         <div class="btn-group">
             {% if request.user == player.user %}
             <div class="col-auto">
-                <a href="{% url 'game:player_edit' %}" class="button btn-default read-more">Edit Details</a>
+                <a href="{% url 'game:player_edit' %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-pen-to-square"></i> Details
+                </a>
             </div>
             <div class="col-auto">
-                <a href="{% url 'password_change' %}" class="button btn-default read-more">Change Password</a>
+                <a href="{% url 'password_change' %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-key"></i> Change Password
+                </a>
             </div>
             {% endif %}
             {% if request.user == player.user or request.user.is_staff %}
             <div class="col-auto">
-                <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Send/Receive</a>
+                <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-right-left fa-fw"></i><i class="fa-solid fa-sterling-sign fa-fw"></i> Send/Receive
+                </a>
             </div>
             {% endif %}
         </div>

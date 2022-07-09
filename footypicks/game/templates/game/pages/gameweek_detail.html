@@ -7,20 +7,28 @@
     <div class="row m-1">
         <div class="btn-group">
             <div class="col-auto">
-                <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="button btn-default read-more">Back to League</a>
+                <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}"
+                   class="button btn-default read-more">
+                    <i class="fa-solid fa-arrow-left"></i> League
+                </a>
             </div>
             {% if can_predict %}
             <div class="col-auto">
-                <a href="{% url 'game:game_predict' pk=game.pk %}" class="button btn-default read-more">Predict</a>
+                <a href="{% url 'game:game_predict' pk=game.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-wand-sparkles"></i> Predict
+                </a>
             </div>
             {% endif %}
             {% if player_is_owner %}
             <div class="col-auto">
-                <a href="{% url 'game:game_edit' pk=game.pk %}" class="button btn-default read-more">Edit Game</a>
+                <a href="{% url 'game:game_edit' pk=game.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit</a>
             </div>
 
             <div class="col-auto">
-                <a href="{% url 'game:game_end' pk=game.pk %}" class="button btn-default read-more">End Game</a>
+                <a href="{% url 'game:game_end' pk=game.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-flag-checkered"></i> End
+                </a>
             </div>
             {% endif %}
         </div>
@@ -36,13 +44,13 @@
             <div class="row post-inner-content">
                 <div class="row">
                     <div class="col-12">
-                        <h2 class="alignleft">{{ game }}</h2>
+                        <h2 class="alignleft"><i class="fa-solid fa-dice"></i> {{ game }}</h2>
                     </div>
                     <!--<div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
                     </div>-->
                     <div class="col-6">
-                        <h5 class="alignleft">Last update: {{ game.last_update|timesince }} ago</h5>
+                        <h5 class="alignleft">Last update: <abbr title="{{ game.last_update }}">{{ game.last_update|timesince }}</abbr> ago</h5>
                     </div>
                     <div class="col-6">
                         <h5 class="alignright"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
@@ -51,12 +59,12 @@
                 </div>
                 <div id="grad-thin"></div>
                 <div class="col-lg-5 col-sm-6 col-md-6">
-                    <h5>Fixtures</h5>
+                    <h5><i class="fa-solid fa-futbol"></i> Fixtures</h5>
                     {% include 'game/partials/fixtures_table.html' with fixtures=game.fixtures.all %}
                 </div>
                 <div class="col-lg-4 col-sm-6 col-md-6">
                     {% if user.is_authenticated or player %}
-                    <h5>
+                    <h5><i class="fa-solid fa-wand-sparkles"></i>
                         {{ player }}'s Picks
                     </h5>
                     {% else %}
@@ -69,8 +77,9 @@
                     {% endif %}
                 </div>
                 <div class="col-lg-3 col-sm-12 com-md-12">
-                    <h5>Leaderboard</h5>
+                    <h5><i class="fa-solid fa-table"></i> Game Leaderboard</h5>
                     {% include 'game/partials/leaderboard.html' with leaderboard=leaderboard %}
+                    <small>Click on a players name to see their Picks for this Game</small>
                 </div>
 
                 <!--<div class="col-lg-6 col-sm">

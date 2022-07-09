@@ -8,14 +8,21 @@
     <div class="row m-1">
         <div class="btn-group">
             <div class="col-auto">
-                <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}" class="button btn-default read-more">Back to League</a>
+                <a href="{% url 'game:minileague_detail' pk=game.mini_league.id %}"
+                   class="button btn-default read-more">
+                    <i class="fa-solid fa-arrow-left"></i> League
+                </a>
             </div>
             {% if player_is_owner %}
             <div class="col-auto">
-                <a href="{% url 'game:leaderboard_edit' pk=game.pk %}" class="button btn-default read-more">Edit Leaderboard</a>
+                <a href="{% url 'game:leaderboard_edit' pk=game.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </a>
             </div>
             <div class="col-auto">
-                <a href="{% url 'game:leaderboard_end' pk=game.pk %}" class="button btn-default read-more">End Leaderboard</a>
+                <a href="{% url 'game:leaderboard_end' pk=game.pk %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-flag-checkered"></i> End
+                </a>
             </div>
             {% endif %}
         </div>
@@ -31,7 +38,7 @@
             <div class="row post-inner-content">
                 <div class="row">
                     <div class="col-12">
-                        <h2 class="alignleft">{{ game.name }}</h2>
+                        <h2 class="alignleft"><i class="fa-solid fa-table"></i> {{ game.name }}</h2>
                     </div>
                     <!--<div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
@@ -46,13 +53,14 @@
                     <div id="grad-thin"></div>
                 </div>
                 <div class="col-lg-9 col-sm">
-                    <h5>Leaderboard</h5>
+                    <h5><i class="fa-solid fa-table"></i> Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=leaderboard %}
                     <!--INSERT LIST OF PLAYER PERFORMANCE BY GAMEWEEK HERE-->
                 </div>
                 <div class="col-lg-3">
-                    <h5>Games</h5>
+                    <h5><i class="fa-solid fa-dice"></i> Games</h5>
                     {% include 'game/partials/gameweeks_list.html' with games=games_for_lb %}
+                    <small>The Games above contribute towards the final result of this Leaderboard</small>
                 </div>
             </div>
         </div>

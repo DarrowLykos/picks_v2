@@ -7,7 +7,9 @@
 <div class="container main-content-area">
     <div class="row m-1">
         <div class="col-auto">
-            <a href="{% url 'game:game_detail' pk=game.pk %}" class="button btn-default">Back to Game</a>
+            <a href="{% url 'game:game_detail' pk=game.pk %}" class="button btn-default">
+                <i class="fa-solid fa-arrow-left"></i>  Game
+            </a>
         </div>
     </div>
     <div class="row m-1">
@@ -18,7 +20,7 @@
     {% include 'game/partials/messages.html' %}
     <div class="row m-1">
         <div class="col-lg-8 col-sm-12 post-inner-content p-2">
-            <h2>{{ game }}</h2>
+            <h2><i class="fa-solid fa-wand-sparkles"></i> {{ game }}</h2>
             <form method="post" id="picks_form">
                 {% csrf_token %}
                 {% if game.status == "E" %}

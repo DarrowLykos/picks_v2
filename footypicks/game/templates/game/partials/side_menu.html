@@ -1,21 +1,21 @@
 <div class="row">
     <div class="col-lg-12 ">
-        <h5>Scoring</h5>
+        <h5><i class="fa-solid fa-calculator"></i> Scoring</h5>
         {% include 'game/partials/score_structure.html' with score=score %}
     </div>
     <hr class="title-line">
     <div class="col-lg-12 ">
-        <h5>Leaderboards</h5>
+        <h5><i class="fa-solid fa-table"></i> Leaderboards</h5>
         {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
     </div>
     <hr class="title-line">
     <div class="col-lg-12 ">
-        <h5>Next 3 Games</h5>
+        <h5><i class="fa-solid fa-dice"></i> Next 3 Games</h5>
         {% include 'game/partials/leaderboard_list.html' with leaderboards=next_games %}
     </div>
     <hr class="title-line">
     <div class="col-lg-12 ">
-        <h5>Previous 3 Games</h5>
+        <h5><i class="fa-solid fa-dice"></i> Previous 3 Games</h5>
         {% include 'game/partials/leaderboard_list.html' with leaderboards=prev_games %}
     </div>
     <hr class="title-line">

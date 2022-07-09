@@ -264,6 +264,8 @@ class Fixture(models.Model):
             else:
                 return res'''
             return res
+        elif self.status() == "In play":
+            return "Live"
         else:
             return "?-?"
 

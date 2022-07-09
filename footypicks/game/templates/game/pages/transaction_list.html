@@ -7,10 +7,15 @@
     <div class="row m-1">
         <div class="btn-group">
             <div class="col-auto">
-                <a href="{% url 'game:player_detail' pk=player.id %}" class="button btn-default read-more">Back to Profile</a>
+                <a href="{% url 'game:player_detail' pk=player.id %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-arrow-left"></i> Profile
+                </a>
             </div>
             <div class="col-auto">
-                <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">Send/Receive</a>
+                <a href="{% url 'game:player_transaction_new' %}" class="button btn-default read-more">
+                    <i class="fa-solid fa-right-left fa-fw"></i>
+                    <i class="fa-solid fa-sterling-sign fa-fw"></i> Send/Receive
+                </a>
             </div>
         </div>
     </div>
