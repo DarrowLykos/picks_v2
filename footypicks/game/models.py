@@ -454,14 +454,16 @@ class Gameweek(models.Model):
     def prize_table(self):
         prize_pool = self.prize_pool()
         tbl = prize_split_table(self.prize_split)
-        for k, v in tbl.items():
-            tbl[k] = v * prize_pool
+        if prize_pool > 0:
+            for k, v in tbl.items():
+                #TODO unsupported operand type(s) for *: 'float' and 'decimal.Decimal'
+                tbl[k] = v * prize_pool
 
-        lb = self.leaderboard()
+        '''lb = self.leaderboard()
         for plr in lb:
             # Check total points vs next player. If more than, then the player has current forloop count and return
             # prize split. If players have equal points then adjust prize split values to share between them.
-            pass
+            pass'''
 
         return tbl
 
