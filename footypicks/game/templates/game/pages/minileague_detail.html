@@ -56,14 +56,16 @@
                     <i class="fa-solid fa-futbol fa-fw"></i> Visit a Leaderboard to see how you got on over a set period
                     of Games
                     <i class="fa-solid fa-futbol fa-fw"></i>
+                    <div id="grad-thin"></div>
                 </p>
-                <div id="grad-thin"></div>
+
                 <div class="col-lg-3 col-sm">
                     <h5><i class="fa-solid fa-ranking-star"></i> Leaderboards</h5>
                     {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
                     <small><i class="fa-solid fa-circle-info"></i>
                         Click on a leaderboard above to view aggregated games. Prizes awarded to top players.
                     </small>
+                    <div id="grad-thin"></div>
                 </div>
                 <div class="col-lg-3 col-sm">
                     <h5><i class="fa-solid fa-dice"></i> Games</h5>
@@ -83,6 +85,9 @@
                     <small><i class="fa-solid fa-circle-info"></i>
                         See how you're getting on in the Annual Leaderboard.
                     </small>
+                    <div id="grad-thin"></div>
+                    <!--<h5><i class="fa-solid fa-user-tie"></i> New Players</h5>
+                    {% include 'game/partials/league_members_list.html' %}-->
                 </div>
                 {% if player_is_owner %}
                 <div class="col-lg-6 col-sm-12 p-2">

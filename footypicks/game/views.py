@@ -99,6 +99,7 @@ class MiniLeagueDetail(DetailView):
             context['primary_leaderboard'] = self.object.leaderboards.get(primary_ag=True).leaderboard()
         except:
             pass
+        context['players'] = self.object.new_players()
         return context
 
 

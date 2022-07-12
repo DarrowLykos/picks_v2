@@ -2758,11 +2758,17 @@ tbody td {
 
 .well {
     padding: 10px 0px !important;
+    margin-top: 10px;
     }
 
 #grad-nav {
     margin-top: 20px !important;
     }
+
+.main-content-area {
+    margin-top: 10px;
+}
+
 }
 
 @media screen and (min-width: 769px) {
@@ -2774,6 +2780,7 @@ tbody td {
     color: #DA4453 !important;
     width:50% !important;
     }
+
 
 
 }

@@ -1,11 +1,13 @@
-<table class="table table-sm small">
+<table class="table table-sm small table-hover">
     <thead>
     </thead>
     <tbody>
         {% for player in players %}
         <tr>
-            <td><a href="{% url 'game:player_detail' pk=player.id %}">{{ player }}</a></td>
+            <td>{{ player }}</td>
         </tr>
+        {% empty %}
+        <tr><td>None</td></tr>
         {% endfor %}
     </tbody>
 </table>

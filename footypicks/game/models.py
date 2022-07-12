@@ -345,6 +345,10 @@ class MiniLeague(models.Model):
     def primary_leaderboard(self):
         return self.leaderboards.get(primary_ag=True)
 
+    def new_players(self):
+        return self.players.all()
+
+
 
 class Gameweek(models.Model):
     # TODO block creation if start date > end date

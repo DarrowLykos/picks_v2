@@ -13,6 +13,12 @@
             <td>{{ game.start_date|date:"D, jS M Y" }}</td>
             <td>{{ game.end_date|date:"D, jS M Y" }}</td>
         </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">
+                No Games
+            </td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>
