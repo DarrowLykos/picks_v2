@@ -38,29 +38,40 @@
             <div class="row post-inner-content">
                 <div class="row">
                     <div class="col-12">
-                        <h2 class="alignleft"><i class="fa-solid fa-table"></i> {{ game.name }}</h2>
+                        <h2 class="alignleft"><i class="fa-solid fa-ranking-star"></i> {{ game.name }}</h2>
                     </div>
                     <!--<div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
                     </div>-->
+                    <p>
+                    <i class="fa-solid fa-futbol fa-fw"></i> Check out Player performance in the Leaderboard below
+                    <i class="fa-solid fa-futbol fa-fw"></i> Go ahead and make your predictions in the next Game
+                    <i class="fa-solid fa-futbol fa-fw"></i> Come back after the Leaderboard has finished to see how you
+                        got on
+                    <i class="fa-solid fa-futbol fa-fw"></i>
+                    </p>
                     <div class="col-6">
                         <h5 class="alignleft">Last update: {{ game.last_update|timesince }} ago</h5>
                     </div>
                     <div class="col-6">
                         <h5 class="alignright"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
                     </div>
-
                     <div id="grad-thin"></div>
                 </div>
                 <div class="col-lg-9 col-sm">
-                    <h5><i class="fa-solid fa-table"></i> Leaderboard</h5>
+                    <h5><i class="fa-solid fa-ranking-star"></i> Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=leaderboard %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        Full Player performance for this Leaderboard
+                    </small>
                     <!--INSERT LIST OF PLAYER PERFORMANCE BY GAMEWEEK HERE-->
                 </div>
                 <div class="col-lg-3">
                     <h5><i class="fa-solid fa-dice"></i> Games</h5>
                     {% include 'game/partials/gameweeks_list.html' with games=games_for_lb %}
-                    <small>The Games above contribute towards the final result of this Leaderboard</small>
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        The Games above contribute towards the final result of this Leaderboard
+                    </small>
                 </div>
             </div>
         </div>
@@ -68,6 +79,11 @@
             <div class="row well">
                 <div class="col">
                     {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        Accumulated Prize pool for this Leaderboard and the payout.
+                        See the About page for a detailed explanation.
+                    </small>
+                    <hr class="title-line">
                     {% include 'game/partials/side_menu.html' %}
                 </div>
             </div>

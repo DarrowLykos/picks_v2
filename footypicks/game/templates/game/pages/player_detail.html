@@ -29,13 +29,13 @@
     </div>
     <div class="row m-1">
         <div class="col post-title-content">
-            <h1 class="entry-title">{{ player }}'s Profile</h1>
+            <h1 class="entry-title"><i class="fa-solid fa-user-tie"></i> {{ player }}'s Profile</h1>
         </div>
     </div>
     <div class="row m-1 post-inner-content">
         <div class="col-lg-2 col-sm-12 col-md-4">
             <div class="col-lg-12 col-sm">
-                <h5>Personal Details</h5>
+                <h5><i class="fa-solid fa-user-tie"></i> Personal Details</h5>
                 {% if player.thumbnail %}
                 <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="100%" id="content-desktop">
                 <img class="p-1" src="{{ player.thumbnail.url }}" alt="Profile Picture" width="50%" id="content-mobile">
@@ -64,27 +64,35 @@
             </div>
             <div id="grad-thin"></div>
             <div class="col-lg-12 col-sm">
-                <h5>Leagues</h5>
+                <h5><i class="fa-solid fa-trophy"></i> Leagues</h5>
                 {% include 'game/partials/leagues_list.html' %}
+                <small><i class="fa-solid fa-circle-info"></i>
+                    Click on a League to make your Predictions or see results
+                </small>
             </div>
             <div id="grad-thin"></div>
         </div>
         <div class="col-lg-6 col-sm-12 col-md-8">
             <div class="col-lg-6 col-sm">
-                <h5>Current Balances</h5>
+                <h5><i class="fa-solid fa-sterling-sign"></i> Current Balances</h5>
                 {% if request.user.player == player or request.user.is_staff %}
                 {% include 'game/partials/player_balance.html' %}
                 {% else %}
                 <p>Restricted view</p>
                 {% endif %}
+                <small><i class="fa-solid fa-circle-info"></i>
+                    Summary of your balances. See Transactions below for detail.
+                </small>
             </div>
             <div id="grad-thin"></div>
             <div class="col-lg-12 col-sm ">
-                <h5>Recent Transaction History</h5>
+                <h5><i class="fa-solid fa-right-left fa-fw"></i> Recent Transaction History</h5>
                 {% if request.user.player == player or request.user.is_staff %}
                 {% include 'game/partials/transaction_list.html' with transactions=all_transactions %}
-                <small>Most recent transactions appear here. Pending transactions will be cleared upon confirmation of receipt.
-                If you send money to the Picks, please create a transaction by clicking Send/Receive above.</small></p>
+                <small><i class="fa-solid fa-circle-info"></i> Most recent transactions appear here. Pending
+                    transactions will be cleared upon confirmation of receipt. If you send money to the Picks, please
+                    create a transaction by clicking Send/Receive above.
+                </small><br>
                 <a class="p-1" href="{% url 'game:player_transactions_by_id' pk=player.id %}">More Transactions</a>
                 {% else %}
                 <p>Restricted view</p>
@@ -94,7 +102,7 @@
         </div>
         <div class="col-lg-4 col-sm col-md-12">
             <div class="col-lg-12 col-sm">
-                <h5>Trophy Cabinet</h5>
+                <h5><i class="fa-solid fa-trophy"></i> Trophy Cabinet</h5>
                 <div class="row p-0">
                     {% if player.trophy_set.all %}
                     {% for trophy in player.trophy_set.all %}

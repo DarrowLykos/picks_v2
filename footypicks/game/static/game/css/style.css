@@ -2657,6 +2657,7 @@ text-align-right {
 
 hr.title-line {
     color:#DA4453;
+    margin: 8px 0px;
 }
 
 .cropped {
@@ -2781,4 +2782,20 @@ tbody td {
 
 vertical-align: middle;
 
+}
+
+.table {
+    margin-bottom: 0.5rem;
+
+}
+
+small {
+    padding-bottom: 0.5rem;
+}
+
+.fake-button {
+    background-color: #DA4453;
+    color: #F2F2F2;
+    padding: 5px;
+    border-radius: 15px 15px 0px 0px;
 }

@@ -67,6 +67,13 @@ class MiniLeagueDetail(DetailView):
     template_name = 'game/pages/minileague_detail.html'
     context_object_name = 'league'
 
+    def get_object(self):
+        if 'pk' not in self.kwargs or self.kwargs['pk'] == 0:
+            ml = MiniLeague.objects.get(play_link=True)
+            self.kwargs['pk'] = ml.id
+            return ml
+        return super(MiniLeagueDetail, self).get_object()
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

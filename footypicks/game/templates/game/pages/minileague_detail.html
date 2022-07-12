@@ -48,21 +48,41 @@
     <div class="row m-1">
         <div class="col-lg-10 col-sm col-md-8">
             <div class="row post-inner-content">
+                <p>
+                    <i class="fa-solid fa-futbol fa-fw"></i> Check out Player performance in Games and Leaderboards below
+                    <i class="fa-solid fa-futbol fa-fw"></i> Go ahead and make your predictions in the next Game before
+                    the Start Date
+                    <i class="fa-solid fa-futbol fa-fw"></i> Come back after a Game has ended to see how your Picks got on
+                    <i class="fa-solid fa-futbol fa-fw"></i> Visit a Leaderboard to see how you got on over a set period
+                    of Games
+                    <i class="fa-solid fa-futbol fa-fw"></i>
+                </p>
                 <div id="grad-thin"></div>
                 <div class="col-lg-3 col-sm">
-                    <h5><i class="fa-solid fa-table"></i> Leaderboards</h5>
+                    <h5><i class="fa-solid fa-ranking-star"></i> Leaderboards</h5>
                     {% include 'game/partials/leaderboard_list.html' with leaderboards=leaderboards %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        Click on a leaderboard above to view aggregated games. Prizes awarded to top players.
+                    </small>
                 </div>
                 <div class="col-lg-3 col-sm">
                     <h5><i class="fa-solid fa-dice"></i> Games</h5>
                     {% include 'game/partials/gameweeks_list.html' with games=prev_games heading="Previous" %}
+                    <small><i class="fa-solid fa-circle-info"></i> Click on a Game to see results.</small>
                     {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
+                    <small>
+                        <i class="fa-solid fa-circle-info">
+                        </i> Click on a Game to make your Predictions and see upcoming fixtures
+                    </small><br>
                     <a href="{% url 'game:gameweek_list' pk=league.id %}">All Games</a>
                     <div id="grad-thin"></div>
                 </div>
                 <div class="col-lg-6 col-sm p-1">
-                    <h5><i class="fa-solid fa-table"></i> {{ league.primary_leaderboard.name }} Leaderboard</h5>
+                    <h5><i class="fa-solid fa-ranking-star"></i> {{ league.primary_leaderboard.name }} Leaderboard</h5>
                     {% include 'game/partials/expanded_leaderboard.html' with leaderboard=primary_leaderboard %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        See how you're getting on in the Annual Leaderboard.
+                    </small>
                 </div>
                 {% if player_is_owner %}
                 <div class="col-lg-6 col-sm-12 p-2">
@@ -82,6 +102,10 @@
                             <td>&pound;{{ league.gameweek_fee }}</td>
                         </tr>
                     </table>
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        The cost per Game to play in this Mini-League. Fees are deducted from your Balance when you
+                        submit your Picks. See your Profile for your current Balance and to make a topup.
+                    </small>
                     <hr class="title-line">
                     {% include 'game/partials/side_menu.html' %}
                 </div>

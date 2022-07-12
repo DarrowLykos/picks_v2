@@ -20,7 +20,12 @@
     {% include 'game/partials/messages.html' %}
     <div class="row m-1">
         <div class="col-lg-8 col-sm-12 post-inner-content p-2">
-            <h2><i class="fa-solid fa-wand-sparkles"></i> {{ game }}</h2>
+            <h2>Your <i class="fa-solid fa-wand-sparkles"></i> Predictions for {{ game }}</h2>
+            <small>
+                Enter your Predictions below. Only Predictions made before a fixture has kicked off will be valid. You
+                can come back any time before a fixture has kicked off to change your Prediction. Fixtures will
+                <i class="fa-solid fa-lock"></i> lock after kick off.
+            </small>
             <form method="post" id="picks_form">
                 {% csrf_token %}
                 {% if game.status == "E" %}
@@ -176,9 +181,16 @@
             <div class="row post-inner-content">
                 <div class="col">
                     {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        Accumulated Prize pool for this Game and the payout.
+                        See the About page for a detailed explanation.
+                    </small>
                     <div id="grad-thin"></div>
                     <h5>Scoring</h5>
                     {% include 'game/partials/score_structure.html' with score=score %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        Points awarded for accurate Predictions. See the About page for a detailed explanation.
+                    </small>
                     <div id="grad-thin"></div>
                 </div>
             </div>

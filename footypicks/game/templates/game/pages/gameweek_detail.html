@@ -49,18 +49,27 @@
                     <!--<div class="col-6">
                         <h3 class="alignright">{{ game.get_status_display }}</h3>
                     </div>-->
+                    <p>
+                    <i class="fa-solid fa-futbol fa-fw"></i> Check out Player performance in the Game below
+                    <i class="fa-solid fa-futbol fa-fw"></i> Go ahead and make your predictions above
+                    <i class="fa-solid fa-futbol fa-fw"></i> Come back after the Game has finished to see how you got on
+                    <i class="fa-solid fa-futbol fa-fw"></i>
+                    </p>
                     <div class="col-6">
                         <h5 class="alignleft">Last update: <abbr title="{{ game.last_update }}">{{ game.last_update|timesince }}</abbr> ago</h5>
                     </div>
                     <div class="col-6">
                         <h5 class="alignright"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
                     </div>
-
                 </div>
                 <div id="grad-thin"></div>
                 <div class="col-lg-5 col-sm-6 col-md-6">
                     <h5><i class="fa-solid fa-futbol"></i> Fixtures</h5>
                     {% include 'game/partials/fixtures_table.html' with fixtures=game.fixtures.all %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        The fixtures everyone's making their Predictions on. Click on
+                        <span class="fake-button"><i class="fa-solid fa-wand-sparkles"></i> Predict</span> above to make yours.
+                    </small>
                 </div>
                 <div class="col-lg-4 col-sm-6 col-md-6">
                     {% if user.is_authenticated or player %}
@@ -75,11 +84,18 @@
                     {% else %}
                     No Picks submitted
                     {% endif %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        See how this Player's Picks have performed in the Game. Click a name in the Leaderboard to
+                        change Player.
+                    </small>
                 </div>
                 <div class="col-lg-3 col-sm-12 com-md-12">
-                    <h5><i class="fa-solid fa-table"></i> Game Leaderboard</h5>
+                    <h5><i class="fa-solid fa-ranking-star"></i> Game Leaderboard</h5>
                     {% include 'game/partials/leaderboard.html' with leaderboard=leaderboard %}
-                    <small>Click on a players name to see their Picks for this Game</small>
+                    <small>
+                        <i class="fa-solid fa-circle-info"></i>
+                        Click on a players name to see their Picks for this Game
+                    </small>
                 </div>
 
                 <!--<div class="col-lg-6 col-sm">
@@ -92,6 +108,11 @@
             <div class="row well">
                 <div class="col">
                     {% include 'game/partials/prizes.html' with prize_table=game.prize_table %}
+                    <small><i class="fa-solid fa-circle-info"></i>
+                        Accumulated Prize pool for this Game and the payout.
+                        See the About page for a detailed explanation.
+                    </small>
+                    <hr class="title-line">
                     {% include 'game/partials/side_menu.html' %}
                 </div>
             </div>

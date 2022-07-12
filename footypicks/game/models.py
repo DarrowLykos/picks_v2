@@ -318,6 +318,7 @@ class MiniLeague(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     score_structure = models.ForeignKey(Score, on_delete=models.SET_NULL, null=True)
     gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    play_link = models.BooleanField(default=False)
 
 
     def __str__(self):
