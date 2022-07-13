@@ -44,36 +44,37 @@ class GetRoundEvents:
 
     def update_fixtures(self):
         from .models import Fixture
-        for event in self.data:
-            home_data = [str(event['idHomeTeam']), event['strHomeTeam']]
-            away_data = [str(event['idAwayTeam']), event['strAwayTeam']]
-            print(home_data, away_data)
-            event_id = str(event['idEvent'])
-            event_status = event['strStatus']
-            home_team = self.update_team(home_data)
-            away_team = self.update_team(away_data)
-            print(event_id)
-            fixture, created = Fixture.objects.get_or_create(sportsdb_id=event_id)
-            if created:
-                fixture.home_team = home_team
-                fixture.away_team = away_team
-                fixture.competition = self.comp
+        if self.data:
+            for event in self.data:
+                home_data = [str(event['idHomeTeam']), event['strHomeTeam']]
+                away_data = [str(event['idAwayTeam']), event['strAwayTeam']]
+                print(home_data, away_data)
+                event_id = str(event['idEvent'])
+                event_status = event['strStatus']
+                home_team = self.update_team(home_data)
+                away_team = self.update_team(away_data)
+                print(event_id)
+                fixture, created = Fixture.objects.get_or_create(sportsdb_id=event_id)
+                if created:
+                    fixture.home_team = home_team
+                    fixture.away_team = away_team
+                    fixture.competition = self.comp
 
-            if event_status == "Match Finished":
-                fixture.home_score = int(event['intHomeScore'])
-                fixture.away_score = int(event['intAwayScore'])
-            if not event['strPostponed'] == "no":
-                fixture.postponed = True
-                fixture.sportsdb_id = None
-            fixture.sportsdb_round = int(event['intRound'])
-            ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
-            ko_time = datetime.strptime(event['strTime'], "%H:%M:%S").time()
-            ko = datetime.combine(ko_date, ko_time)
-            ko += LONDON_TZ.dst(ko)
-            fixture.ko_date = ko.strftime("%Y-%m-%d")
-            fixture.ko_time = ko.strftime("%H:%M:%S")
-            fixture.save()
-            print(fixture.short_desc(), "Created:", created)
+                if event_status == "Match Finished":
+                    fixture.home_score = int(event['intHomeScore'])
+                    fixture.away_score = int(event['intAwayScore'])
+                if not event['strPostponed'] == "no":
+                    fixture.postponed = True
+                    fixture.sportsdb_id = None
+                fixture.sportsdb_round = int(event['intRound'])
+                ko_date = datetime.strptime(event['dateEvent'], "%Y-%m-%d")
+                ko_time = datetime.strptime(event['strTime'], "%H:%M:%S").time()
+                ko = datetime.combine(ko_date, ko_time)
+                ko += LONDON_TZ.dst(ko)
+                fixture.ko_date = ko.strftime("%Y-%m-%d")
+                fixture.ko_time = ko.strftime("%H:%M:%S")
+                fixture.save()
+                print(fixture.short_desc(), "Created:", created)
 
 
 '''class GetFixture:

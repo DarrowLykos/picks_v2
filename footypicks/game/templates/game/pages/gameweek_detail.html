@@ -55,11 +55,19 @@
                     <i class="fa-solid fa-futbol fa-fw"></i> Come back after the Game has finished to see how you got on
                     <i class="fa-solid fa-futbol fa-fw"></i>
                     </p>
-                    <div class="col-6">
-                        <h5 class="alignleft">Last update: <abbr title="{{ game.last_update }}">{{ game.last_update|timesince }}</abbr> ago</h5>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <h5 class="alignleft">
+                            Last update: <abbr title="{{ game.last_update }}">
+                            {{ game.last_update|timesince }}</abbr> ago
+                        </h5>
                     </div>
-                    <div class="col-6">
-                        <h5 class="alignright"><i class="fa-solid fa-fw fa-calendar-days"></i>{{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}</h5>
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <h5 id="content-desktop" class="alignright"><i class="fa-solid fa-fw fa-calendar-days"></i>
+                            {{ game.start_date|date:"jS M Y" }} to {{ game.end_date|date:"jS M Y" }}
+                        </h5>
+                        <h5 id="content-mobile" class="alignleft"><i class="fa-solid fa-fw fa-calendar-days"></i>
+                            {{ game.start_date|date:"d/m/Y" }} to {{ game.end_date|date:"d/m/Y" }}
+                        </h5>
                     </div>
                 </div>
                 <div id="grad-thin"></div>

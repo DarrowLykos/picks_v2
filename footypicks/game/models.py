@@ -164,6 +164,19 @@ class Competition(models.Model):
     short_name = models.CharField(max_length=3)
     thumbnail = models.ImageField('Logo', upload_to="team-logos/", blank=True, null=True)
     season = models.CharField(max_length=9, validators=[RegexValidator(r"\d{4}-\d{4}")])
+    total_rounds = models.IntegerField()
+    cup_comp = models.BooleanField(default=False)
+
+    '''
+    Round 125 = Quarter-Final
+    Round 150 = Semi-Final
+    Round 160 = Playoff
+    Round 170 = Playoff Semi-Final
+    Round 180 = Playoff Final
+    Round 200 = Final
+    '''
+
+    CUP_COMP_ROUNDS = [125, 150, 160, 170, 180, 200]
 
     def __str__(self):
         return f"{self.name} | {self.season}"
@@ -171,6 +184,18 @@ class Competition(models.Model):
     def get_fixtures_by_round(self, round_number):
         fixtures = GetRoundEvents(self, round_number)
         fixtures.update_fixtures()
+
+    def get_all_fixtures(self, start=1, end=None):
+        if not end:
+            end = self.total_rounds
+
+        for x in range(start, end, 1):
+            self.get_fixtures_by_round(x)
+
+        if self.cup_comp:
+            for x in self.CUP_COMP_ROUNDS:
+                self.get_fixtures_by_round(x)
+
 
 
 class Team(models.Model):

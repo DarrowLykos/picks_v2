@@ -159,7 +159,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Email backend
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent-emails')
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent-emails')
 
 # TODO actually set up email server
