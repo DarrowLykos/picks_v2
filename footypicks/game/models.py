@@ -163,7 +163,7 @@ class Competition(models.Model):
     name = models.CharField(max_length=25)
     short_name = models.CharField(max_length=3)
     thumbnail = models.ImageField('Logo', upload_to="team-logos/", blank=True, null=True)
-    season = models.CharField(max_length=9, validators=[RegexValidator(r"\d{4}-\d{4}")])
+    season = models.CharField(max_length=9)  # validators=[RegexValidator(r"\d{4}-\d{4}")] kept in case i want it back in
     total_rounds = models.IntegerField()
     cup_comp = models.BooleanField(default=False)
 
