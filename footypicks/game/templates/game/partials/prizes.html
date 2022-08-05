@@ -7,6 +7,8 @@
     <th style="width:70%;">{{ k|ordinal }} Place</th>
     <td>&pound;{{ v|floatformat:2 }}*</td>
   </tr>
+  {% empty %}
+  TBC
   {% endfor %}
   <tr>
     <td style="font-size:0.75em;" colspan="2">

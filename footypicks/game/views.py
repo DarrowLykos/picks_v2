@@ -13,7 +13,7 @@ from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-DEAD_STATUSES = ("E", "D",)
+
 
 # Custom Template Views (DRY)
 class CreateTemplate(CreateView):
@@ -85,7 +85,7 @@ class MiniLeagueDetail(DetailView):
         # Provide context with all games, previous 3 games and, upcoming 3 games
         context['games'] = games
         context['prev_games'] = games.filter(end_date__lte=datetime.now()).order_by('-end_date')[:3]
-        context['next_games'] = games.filter(start_date__gte=datetime.now())[:3]
+        context['next_games'] = games.filter(start_date__gte=datetime.now().date())[:3]
         # Score Structure of Mini-League
         context['score'] = self.object.score_structure.get_fields()
         # If user is logged in provide additional context
@@ -596,11 +596,12 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
         # to the gameweek
         player_gameweek = PlayerGameweek.objects.get(player=self.request.user.player, gameweek=Gameweek.objects.get(pk=kwargs['pk']))
         # Get the joker value from the form and checks the user has selected an option
-        joker = request.POST.get('joker_select', "")
-        if joker == "Select Joker Fixture...":
+        joker = request.POST.get('joker_select', None)
+        print("J", joker)
+        if not joker:
             messages.error(self.request, "Please select a Joker Fixture")
             # Sends the user back to the webpage if they haven't selected a joker
-            return self.render_to_response()
+            return redirect('game:game_predict', kwargs['pk'])
         # Reset changed boolean to false. To be used later to identify if a pick has been changed.
         changed = False
         # Goes through the dictionary of form responses in the POST and checks if any fields were omitted.
@@ -640,6 +641,7 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
                             changed = True
                     print(pick.fixture.fixture, joker, pick.joker)
                     # Saves the joker boolean if the pick was selected as the new joker
+
                     if pick.fixture.fixture == joker and not pick.joker:
                         pick.joker = True
                         # msgs_success.append(f"{pick.fixture} prediction updated")
@@ -746,7 +748,6 @@ class PlayerDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['cleared_transactions'] = self.object.transaction_balances(pending=False)
         context['pending_transactions'] = self.object.transaction_balances(pending=True)
         all_transactions = self.object.all_transactions()
@@ -754,6 +755,7 @@ class PlayerDetail(DetailView):
         context['balances'] = all_transactions
         print("P", self.object.all_transactions()[:10])
         context['leagues'] = self.object.minileague_set.all()
+        # TODO Remind user to add an email address if they haven't already
         return context
 
 

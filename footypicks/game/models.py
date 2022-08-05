@@ -10,7 +10,6 @@ from django.db.models import F
 from .sportsDB import GetRoundEvents
 
 
-
 # MODEL DESCRIPTIONS
 '''
 SCORE:          Model for applying a scoring structure to a game. Also calcs points for accurate predictions. The model 
@@ -85,6 +84,7 @@ def prize_split_table(prize_split):
     else:
         return None
 
+
 class Score(models.Model):
     name = models.CharField(max_length=100)
     correct_score = models.IntegerField(default=0)
@@ -156,6 +156,7 @@ class Score(models.Model):
         print("POINTS: ", points)
         return points
 
+
 # REAL WORLD FOOTBALL DATA
 class Competition(models.Model):
     # A football competition such as the Premier League or FA Cup
@@ -163,7 +164,7 @@ class Competition(models.Model):
     name = models.CharField(max_length=25)
     short_name = models.CharField(max_length=3)
     thumbnail = models.ImageField('Logo', upload_to="team-logos/", blank=True, null=True)
-    season = models.CharField(max_length=9)  # validators=[RegexValidator(r"\d{4}-\d{4}")] kept in case i want it back in
+    season = models.CharField(max_length=9)  # validators=[RegexValidator(r"\d{4}-\d{4}")] kept in case want it back in
     total_rounds = models.IntegerField()
     cup_comp = models.BooleanField(default=False)
 
@@ -195,7 +196,6 @@ class Competition(models.Model):
         if self.cup_comp:
             for x in self.CUP_COMP_ROUNDS:
                 self.get_fixtures_by_round(x)
-
 
 
 class Team(models.Model):
@@ -253,7 +253,6 @@ class Fixture(models.Model):
     postponed = models.BooleanField(default=False)
     sportsdb_round = models.IntegerField(null=True, )
 
-
     def __str__(self):
         return self.full_desc()
 
@@ -270,12 +269,12 @@ class Fixture(models.Model):
 
     def full_desc(self):
         # Home Team vs Away Team | Comp Name | Kick Off | Score
-        return f"{self.home_team} vs {self.away_team} | {self.competition.short_name} | {self.kick_off()} | {self.final_score}"
+        return f"{self.home_team} vs {self.away_team} | " \
+               f"{self.competition.short_name} | {self.kick_off()} | {self.final_score}"
 
     def short_desc(self):
         # ABC vs XYZ | CMP
         return f"{self.home_team.initial_name} vs {self.away_team.initial_name} | {self.competition.short_name}"
-
 
     @property
     def final_score(self):
@@ -293,8 +292,6 @@ class Fixture(models.Model):
             return "Live"
         else:
             return "?-?"
-
-
 
     def kick_off(self, str=False):
         # Date, Time
@@ -327,6 +324,7 @@ class Fixture(models.Model):
         elif self.home_score == self.away_score:
             return "Draw"
 
+
 # Footy Picks game data
 class MiniLeague(models.Model):
 
@@ -338,13 +336,13 @@ class MiniLeague(models.Model):
     players = models.ManyToManyField(Player, blank=True)
     status = models.CharField(choices=GAME_STATUS, max_length=1, default="L")
     created_date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL, related_name='owned', related_query_name='owner')
+    owner = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL,
+                              related_name='owned', related_query_name='owner')
     new_players_allowed = models.BooleanField(default=True)
     last_update = models.DateTimeField(auto_now=True)
     score_structure = models.ForeignKey(Score, on_delete=models.SET_NULL, null=True)
     gameweek_fee = models.DecimalField(max_digits=10, decimal_places=2)
     play_link = models.BooleanField(default=False)
-
 
     def __str__(self):
         return self.name
@@ -372,7 +370,6 @@ class MiniLeague(models.Model):
 
     def new_players(self):
         return self.players.all()
-
 
 
 class Gameweek(models.Model):
@@ -418,7 +415,7 @@ class Gameweek(models.Model):
 
     def leaderboard(self, limit=None):
 
-        #self.update_points()
+        # self.update_points()
         lb = self.playergameweek_set.all()
         return lb.order_by('-points')
 
@@ -436,20 +433,20 @@ class Gameweek(models.Model):
                 self.save()
                 print('saved gw')
 
-
     def update_fixtures(self):
         unique_comps_ids = self.fixtures.order_by('competition').values_list('competition', flat=True).distinct()
         unique_comps = Competition.objects.filter(id__in=unique_comps_ids)
         from .sportsDB import GetRoundEvents
         for comp in unique_comps:
-            rounds = self.fixtures.filter(competition=comp).order_by('sportsdb_round').values_list('sportsdb_round', flat=True).distinct()
+            rounds = self.fixtures.filter(competition=comp).order_by('sportsdb_round').values_list('sportsdb_round',
+                                                                                                   flat=True).distinct()
             for round in rounds:
                 if round:
                     print(f'Updating Round {round} of {comp}')
                     GetRoundEvents(comp, round).update_fixtures()
 
     def update_points(self):
-        #self.playergameweek_set.update_points(self.mini_league.score_structure)
+        # self.playergameweek_set.update_points(self.mini_league.score_structure)
         for pg in self.playergameweek_set.all():
             try:
                 pg.update_points()
@@ -462,11 +459,10 @@ class Gameweek(models.Model):
 
     def get_predictions_by_player(self, player_id):
         try:
-            #self.playergameweek_set.get(player_id=player_id).predictions.update_points(self.mini_league.score_structure)
-            print(self.playergameweek_set.get(player_id=player_id).predictions.all())
             picks = self.playergameweek_set.get(player_id=player_id).predictions.all()
+            print(picks)
             return picks
-            #return self.playergameweek_set.get(player_id=player_id).get_predictions()
+            # return self.playergameweek_set.get(player_id=player_id).get_predictions()
         except:
             return None
 
@@ -481,8 +477,10 @@ class Gameweek(models.Model):
         tbl = prize_split_table(self.prize_split)
         if prize_pool > 0:
             for k, v in tbl.items():
-                #TODO unsupported operand type(s) for *: 'float' and 'decimal.Decimal'
+                # TODO unsupported operand type(s) for *: 'float' and 'decimal.Decimal'
                 tbl[k] = v * prize_pool
+        else:
+            return None
 
         '''lb = self.leaderboard()
         for plr in lb:
@@ -503,7 +501,8 @@ class AggregatedGame(models.Model):
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     gameweeks = models.ManyToManyField(Gameweek, related_name="leaderboards", blank=True)
     mini_league = models.ForeignKey(MiniLeague, on_delete=models.CASCADE, related_name="leaderboards")
-    primary_ag = models.BooleanField(verbose_name="Primary Mini-League Leaderboard", default=False) #  determines if this is the primary AG for the mini-league
+    primary_ag = models.BooleanField(verbose_name="Primary Mini-League Leaderboard",
+                                     default=False) #  determines if this is the primary AG for the mini-league
     status = models.CharField(max_length=1, choices=GAME_STATUS, default="U")
     last_update = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField()
@@ -552,7 +551,8 @@ class AggregatedGame(models.Model):
 
     def leaderboard(self, limit=None):
         gws = self.gameweeks.all()
-        lb = PlayerGameweek.objects.filter(gameweek__in=gws, valid=True).values(name=F('player__user__username')).annotate(
+        lb = PlayerGameweek.objects.filter(gameweek__in=gws, valid=True).values(
+            name=F('player__user__username')).annotate(
             sum_points=Sum('points'),
             count_gameweeks=Count('gameweek'),
             avg_points=Avg('points'),
@@ -562,7 +562,6 @@ class AggregatedGame(models.Model):
         if limit:
             return list(lb.order_by('-sum_points')[:limit])
         return list(lb.order_by('-sum_points'))
-
 
     def prize_table(self):
         prize_pool = float(self.prize_pool())
@@ -577,6 +576,7 @@ class AggregatedGame(models.Model):
             count__gt=0).count()
         print("TOT", total_plays)
         return total_plays * self.split_of_gameweek_fee
+
 
 class PredictionManager(models.Manager):
     def update_points(self, score):
@@ -636,7 +636,6 @@ class Prediction(models.Model):
             self.save()
             print("Updated Points", self, self.points)
         return points
-
 
     def validate_joker(self):
         # Check rules to see if too many jokers
@@ -738,10 +737,9 @@ class PlayerGameweek(models.Model):
     def validate_predictions(self):
         pass
 
-
     def get_joker(self):
         try:
-            #return self.get_predictions().filter(joker=True)[0]
+            # return self.get_predictions().filter(joker=True)[0]
             return self.predictions.filter(joker=True)[0]
         except IndexError:
             return None

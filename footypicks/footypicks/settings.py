@@ -16,11 +16,8 @@ from django.contrib.messages import constants as messages
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-print(BASE_DIR)
-# Quick-start development app_settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-
+# Retrieves extra settings based on environment
 if "Py Projects" in BASE_DIR:
     print("DEV")
     from .app_settings.dev import *
@@ -29,11 +26,11 @@ else:
     from .app_settings.prod import *
 
 
+# DEBUG retrieved from prod or dev modules in app_settings folder
 
-# SECURITY WARNING: don't run with debug turned on in production!
-'''DEBUG = True
+# ALLOWED_HOSTS retrieved from prod or dev modules in app_settings folder
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'footypicks.com', '192.168.1.163', 'sjones187.ddns.net', ]'''
+# DATABASE retrieved from prod or dev modules in app_settings folder
 
 
 # Application definition
@@ -81,17 +78,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'footypicks.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-'''DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}'''
 
 
 # Password validation
@@ -162,5 +148,3 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent-emails')
-
-# TODO actually set up email server

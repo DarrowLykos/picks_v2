@@ -5,8 +5,7 @@ footypicks/media/player-pics
 footypicks/sent-emails
 Sample Styles
 footypicks/footypicks/app_settings/dev
-settings
-.env
 db.sqlite3
 __pycache__
 dev
+footypicks/.env
