@@ -740,6 +740,7 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
         context['new_fixtures'] = new_fixtures
         context['joker'] = player_gameweek.get_joker()
         context['score'] = self.object.mini_league.score_structure.get_fields()
+        context['show_joker'] = self.object.mini_league.score_structure.joker_multiplier
 
         return context
 

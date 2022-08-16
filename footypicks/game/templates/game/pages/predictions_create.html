@@ -152,6 +152,7 @@
                         {% endif %}
                     </tbody>
                 </table>
+                {% if show_joker %}
                 <label for="joker_select">Joker Fixture</label>
                 <select class="form-control form-select-sm" id="joker_select" name="joker_select">
                     {% if joker.locked %}
@@ -170,8 +171,16 @@
                     {% endif %}
                     {{ fix.fixture }}</option>
                     {% endfor %}
-
                 </select>
+
+                {% else %}
+                <select hidden class="form-control form-select-sm" id="joker_select" name="joker_select">
+                    {% with all_fixtures.0 as fix %}
+                    <option name="joker_{{ fix.id }}" id="joker_{{ fix.id }}" selected>
+                    {{ fix.fixture }}</option>
+                    {% endwith %}
+                </select>
+                {% endif %}
                 {% if not game.status == "E" %}
                 <button class="btn btn-default btn-sm m-1" name="submit" type="submit">Submit</button>
                 {% endif %}
