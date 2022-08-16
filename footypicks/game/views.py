@@ -84,8 +84,10 @@ class MiniLeagueDetail(DetailView):
         games = self.object.get_gameweeks()
         # Provide context with all games, previous 3 games and, upcoming 3 games
         context['games'] = games
-        context['prev_games'] = games.filter(end_date__lte=datetime.now()).order_by('-end_date')[:3]
+        context['prev_games'] = games.filter(end_date__lte=datetime.now().date()).order_by('-end_date')[:3]
         context['next_games'] = games.filter(start_date__gte=datetime.now().date())[:3]
+        context['live_games'] = games.filter(start_date__lte=datetime.now().date(),
+                                             end_date__gte=datetime.now().date())[:3]
         # Score Structure of Mini-League
         context['score'] = self.object.score_structure.get_fields()
         # If user is logged in provide additional context
@@ -595,9 +597,12 @@ class EditPredictions(LoginRequiredMixin, FormMixin, DetailView):
         # Gets or created a PlayerGameweek object that marries the Player to the Gameweek and links their predictions
         # to the gameweek
         player_gameweek = PlayerGameweek.objects.get(player=self.request.user.player, gameweek=Gameweek.objects.get(pk=kwargs['pk']))
+        player_gameweek.valid = True
+        player_gameweek.save()
         # Get the joker value from the form and checks the user has selected an option
         joker = request.POST.get('joker_select', None)
         print("J", joker)
+
         if not joker:
             messages.error(self.request, "Please select a Joker Fixture")
             # Sends the user back to the webpage if they haven't selected a joker

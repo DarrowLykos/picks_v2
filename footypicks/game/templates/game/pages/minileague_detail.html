@@ -69,6 +69,9 @@
                 </div>
                 <div class="col-lg-3 col-sm">
                     <h5><i class="fa-solid fa-dice"></i> Games</h5>
+                    {% if live_games %}
+                    {% include 'game/partials/gameweeks_list.html' with games=live_games heading="Live" %}
+                    {% endif %}
                     {% include 'game/partials/gameweeks_list.html' with games=prev_games heading="Previous" %}
                     <small><i class="fa-solid fa-circle-info"></i> Click on a Game to see results.</small>
                     {% include 'game/partials/gameweeks_list.html' with games=next_games heading="Next" %}
